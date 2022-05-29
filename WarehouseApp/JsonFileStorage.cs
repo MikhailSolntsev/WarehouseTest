@@ -45,7 +45,7 @@ namespace WarehouseApp
                 IncludeFields = true,
                 PropertyNameCaseInsensitive = true,
                 WriteIndented = false,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
             return options;
