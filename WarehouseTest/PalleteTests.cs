@@ -34,7 +34,7 @@ namespace WarehouseTest
             pallet.AddBox(box1);
             pallet.AddBox(box2);
 
-            int Weight = 5 + 7 + 30;
+            int Weight = 5 + 7 + Pallet.OwnWeight;
 
             Assert.Equal(Weight, pallet.Weight);
         }

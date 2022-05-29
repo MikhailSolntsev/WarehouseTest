@@ -9,11 +9,14 @@ namespace WarehouseApp
     public class Box : Scalable
     {
         private const int period = 100;
+
         private DateTime? bestBefore;
-        public DateTime? Produced { get; set; }
+        private DateTime? Produced { get; set; }
+        
+        public int BoxId { get; set; }
+        public int Weight { get; set; }
 
         public override DateTime ExpirationDate { get => Produced switch { null => (DateTime)bestBefore, _ => (DateTime)Produced + TimeSpan.FromDays(period) }; }
-        public int BoxId { get; set; }
 
         public Box(int height, int width, int length, DateTime? bestBefore = null, DateTime? produced = null) : base(height, width, length)
         {

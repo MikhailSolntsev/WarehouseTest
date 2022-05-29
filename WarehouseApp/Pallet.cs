@@ -8,18 +8,19 @@ namespace WarehouseApp
 {
     public class Pallet: Scalable
     {
-        private const int ownWeight = 30;
-
-        public int PalletId { get; set; }
-
+        public const int OwnWeight = 30;
+        
         private List<Box> Boxes = new();
+        
+        public int PalletId { get; set; }
+        public int Weight { get { return OwnWeight + Boxes.Sum(box => box.Weight); } }
+
+        public override int Volume { get { return base.Volume + Boxes.Sum(box => box.Volume); } }
+        public override DateTime ExpirationDate { get => Boxes.Count switch { 0 => DateTime.MinValue, _ => Boxes.Min(box => box.ExpirationDate) }; }
+
         public Pallet(int height, int width, int length) : base(height, width, length)
         {
-            Weight = ownWeight;
         }
-        public override int Volume { get { return base.Volume + Boxes.Sum(box => box.Volume); } }
-        public override int Weight { get { return base.Weight + Boxes.Sum(box => box.Weight); } }
-        public override DateTime ExpirationDate { get => Boxes.Count switch { 0 => DateTime.MinValue, _ => Boxes.Min(box => box.ExpirationDate) }; }
         public void AddBox(Box box)
         {
             if (box.Length > Length)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WarehouseApp
 {
@@ -18,9 +20,8 @@ namespace WarehouseApp
             Width = width;
             Length = length;
         }
-
+        [JsonIgnore]
         virtual public int Volume { get { return Height * Width * Length; } }
-        virtual public int Weight { get; set; }
         virtual public DateTime ExpirationDate { get; }
     }
 }
