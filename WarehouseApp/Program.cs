@@ -1,2 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using WarehouseApp;
+
+Box box = new(2, 3, 4);
+
 Console.WriteLine("Hello, World!");

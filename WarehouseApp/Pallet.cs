@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace WarehouseApp
 {
-    internal class Pallet: Scalable
+    public class Pallet: Scalable
     {
-        public Pallet(int height, int width, int length, int weight)
+        private const int ownWeight = 30;
+
+        public int PalletId { get; set; }
+
+        private List<Box> Boxes = new();
+        public Pallet(int height, int width, int length) : base(height, width, length)
         {
         }
-
-        public int PalletId;
-        public List<Box> Boxes = new();
         override public int Volume { get { return base.Volume + Boxes.Sum(box => box.Volume); } }
+        
     }
 }
