@@ -14,22 +14,22 @@ namespace WarehouseTest
             Assert.Equal(6000, box.Volume);
         }
         [Fact]
-        public void BoxCanStoreBestBefore()
+        public void BoxCanStoreExpirationDate()
         {
             DateTime today = DateTime.Today;
             Box box = new(2, 3, 4, bestBefore: today);
-            Assert.Equal(today, box.BestBefore);
+            Assert.Equal(today, box.ExpirationDate);
         }
         [Fact]
-        public void BoxCancalculateBestBefore()
+        public void BoxCanCalculateExpirationDate()
         {
             DateTime today = DateTime.Today;
             Box box = new(2, 3, 4, produced: today);
             DateTime after100Days = today + TimeSpan.FromDays(100);
-            Assert.Equal(after100Days, box.BestBefore);
+            Assert.Equal(after100Days, box.ExpirationDate);
         }
         [Fact]
-        public void BoxThrowsExceptionWithoutDates()
+        public void BoxCreationThrowsExceptionWithoutDates()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace WarehouseTest
             }
             catch (Exception ex)
             {
-                Assert.Equal(ex.GetType(), typeof(ArgumentNullException));
+                Assert.Equal(typeof(ArgumentNullException), ex.GetType());
             }
         }
     }

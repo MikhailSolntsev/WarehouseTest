@@ -12,7 +12,7 @@ namespace WarehouseApp
         private DateTime? bestBefore;
         public DateTime? Produced { get; set; }
 
-        public DateTime BestBefore { get => Produced switch { null => (DateTime)bestBefore, _ => (DateTime)Produced + TimeSpan.FromDays(period) }; set => bestBefore = value; }
+        public override DateTime ExpirationDate { get => Produced switch { null => (DateTime)bestBefore, _ => (DateTime)Produced + TimeSpan.FromDays(period) }; }
         public int BoxId { get; set; }
 
         public Box(int height, int width, int length, DateTime? bestBefore = null, DateTime? produced = null) : base(height, width, length)

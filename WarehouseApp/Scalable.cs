@@ -8,18 +8,19 @@ namespace WarehouseApp
 {
     public class Scalable
     {
-        private int height;
-        private int width;
-        private int length;
+        public int Height { get; }
+        public int Width { get; }
+        public int Length { get; }
 
         public Scalable(int height, int width, int length)
         {
-            this.height = height;
-            this.width = width;
-            this.length = length;
+            Height = height;
+            Width = width;
+            Length = length;
         }
 
-        virtual public int Volume { get { return height * width * length; } }
+        virtual public int Volume { get { return Height * Width * Length; } }
         virtual public int Weight { get; set; }
+        virtual public DateTime ExpirationDate { get; }
     }
 }
