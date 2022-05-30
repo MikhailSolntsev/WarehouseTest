@@ -217,7 +217,7 @@ namespace WarehouseTest
         {
             JsonFileStorage storage = new JsonFileStorage(fileName);
 
-            List<Pallet> toWrite = new() { new(3, 5, 7) { PalletId = 11} };
+            List<Pallet> toWrite = new() { new(3, 5, 7) };
 
             storage.WriteValues(toWrite);
         }
@@ -242,8 +242,7 @@ namespace WarehouseTest
                 "length",
                 "width",
                 "height",
-                "palletId",
-                "boxes"
+                "palletId"
             };
         }
 

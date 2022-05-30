@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace WarehouseApp
 {
-    [JsonConverter(typeof(WarehouseJsonConverter))]
+    [JsonConverter(typeof(BoxJsonConverter))]
     public class Box : Scalable
     {
         private const int period = 100;

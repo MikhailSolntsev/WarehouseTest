@@ -11,60 +11,47 @@ namespace WarehouseApp
 {
     public class PalletJsonConverter : JsonConverter<Pallet>
     {
-        
+        private readonly WarehouseJsonConverter<Pallet> converter = new();
+
+        public PalletJsonConverter()
+        {
+            converter.jsonReader = PalletFromDictionary;
+            converter.jsonWriter = JsonFromPallet;
+        }
+
         public override Pallet? Read(ref Utf8JsonReader reader,
                                       Type typeToConvert,
                                       JsonSerializerOptions options)
         {
-            var name = reader.GetString();
-
-            if (name == null)
-            {
-                return null;
-            }
-
-            Dictionary<string, JsonElement>? source = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(name);
-
-            if (source == null)
-            {
-                return null;
-            }
-
-            var category = new Pallet(0, 0, 0);
-
-            var categoryType = category.GetType();
-            var categoryProps = categoryType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-            foreach (var s in source.Keys)
-            {
-                var categoryProp = categoryProps.FirstOrDefault(x => x.Name == s);
-
-                if (categoryProp != null)
-                {
-                    var value = JsonSerializer.Deserialize(source[s].GetRawText(), categoryProp.PropertyType);
-
-                    categoryType.InvokeMember(categoryProp.Name,
-                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance,
-                        null,
-                        category,
-                        new object[] { value });
-                }
-            }
-
-            return category;
+           return converter.Read(ref reader);
         }
 
         public override void Write(Utf8JsonWriter writer,
                                    Pallet value,
                                    JsonSerializerOptions options)
         {
-            var props = value.GetType()
-                             .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                             .ToDictionary(x => x.Name, x => x.GetValue(value));
+            converter.Write(writer, value);
+        }
 
-            var ser = JsonSerializer.Serialize(props);
+        private Pallet PalletFromDictionary(Dictionary<string, object> dictionary)
+        {
+            Pallet pallet= new(
+                (int)dictionary["height"],
+                (int)dictionary["width"],
+                (int)dictionary["length"],
+                (string)dictionary["palletId"]);
+            return pallet;
+        }
+        private void JsonFromPallet(Utf8JsonWriter writer, Pallet value)
+        {
+            writer.WriteStartObject();
 
-            writer.WriteStringValue(ser);
+            writer.WriteString("palletId", value.PalletId);
+            writer.WriteNumber("height", value.Height);
+            writer.WriteNumber("width", value.Width);
+            writer.WriteNumber("length", value.Length);
+            
+            writer.WriteEndObject();
         }
     }
 }

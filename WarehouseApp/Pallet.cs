@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,19 +11,26 @@ namespace WarehouseApp
     public class Pallet: Scalable
     {
         public const int OwnWeight = 30;
-        [JsonInclude]
-        private List<Box> Boxes = new();
         
-        public int PalletId { get; set; }
-        [JsonIgnore]
-        public int Weight { get { return OwnWeight + Boxes.Sum(box => box.Weight); } }
-        [JsonIgnore]
-        public override int Volume { get { return base.Volume + Boxes.Sum(box => box.Volume); } }
-        [JsonIgnore]
-        public override DateTime ExpirationDate { get => Boxes.Count switch { 0 => DateTime.MinValue, _ => Boxes.Min(box => box.ExpirationDate) }; }
+        private List<Box> boxes = new();
+        
+        public string PalletId { get; }
+        
+        public int Weight { get { return OwnWeight + boxes.Sum(box => box.Weight); } }
+        
+        public IReadOnlyList<Box> Boxes { get => boxes; }
 
+        public override int Volume { get { return base.Volume + boxes.Sum(box => box.Volume); } }
+        
+        public override DateTime ExpirationDate { get => boxes.Count switch { 0 => DateTime.MinValue, _ => boxes.Min(box => box.ExpirationDate) }; }
+
+        public Pallet(int height, int width, int length, string palletId) : base(height, width, length)
+        {
+            PalletId = palletId;
+        }
         public Pallet(int height, int width, int length) : base(height, width, length)
         {
+            PalletId = Guid.NewGuid().ToString();
         }
         public void AddBox(Box box)
         {
@@ -41,7 +49,7 @@ namespace WarehouseApp
                 string message = $"Box height larger than pallete height";
                 throw new ArgumentOutOfRangeException(message);
             }
-            Boxes.Add(box);
+            boxes.Add(box);
         }
     }
 }

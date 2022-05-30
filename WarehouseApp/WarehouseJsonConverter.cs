@@ -8,11 +8,18 @@ using System.Text.Json.Serialization;
 
 namespace WarehouseApp
 {
-    internal class WarehouseJsonConverter : JsonConverter<Box>
+    internal class WarehouseJsonConverter<T>
     {
-        public override Box? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public delegate T JsonReader(Dictionary<string, object> dictionary);
+        public delegate void JsonWriter(Utf8JsonWriter writer, T value);
+
+        public JsonReader jsonReader;
+        public JsonWriter jsonWriter;
+
+        public T Read(ref Utf8JsonReader reader)
         {
             Dictionary<string, object> dictionary = new();
+
             (string, object) pair = new();
 
             while (reader.Read())
@@ -46,7 +53,7 @@ namespace WarehouseApp
                                 dictionary.Add(pair.Item1, pair.Item2);
                             }
                             pair = new();
-                            return BoxFromDictionary(dictionary);
+                            return jsonReader.Invoke(dictionary);
                         }
                     default: break;
                 }
@@ -56,32 +63,13 @@ namespace WarehouseApp
                 dictionary.Add(pair.Item1, pair.Item2);
             }
 
-            return BoxFromDictionary(dictionary);
+            return jsonReader.Invoke(dictionary);
         }
 
-        private Box BoxFromDictionary(Dictionary<string, object> dictionary)
-        {
-            Box box = new Box(
-                (int)dictionary["height"],
-                (int)dictionary["width"],
-                (int)dictionary["length"],
-                (string)dictionary["expirationDate"],
-                (string)dictionary["boxId"],
-                (int)dictionary["weight"]
-                );
-            return box;
-        }
         
-        public override void Write(Utf8JsonWriter writer, Box value, JsonSerializerOptions options)
+        public void Write(Utf8JsonWriter writer, T value)
         {
-            writer.WriteStartObject();
-            writer.WriteString("boxId", value.BoxId);
-            writer.WriteString("expirationDate", value.ExpirationDate);
-            writer.WriteNumber("height", value.Height);
-            writer.WriteNumber("width", value.Width);
-            writer.WriteNumber("length", value.Length);
-            writer.WriteNumber("weight", value.Weight);
-            writer.WriteEndObject();
+            jsonWriter.Invoke(writer, value);
         }
     }
 }
