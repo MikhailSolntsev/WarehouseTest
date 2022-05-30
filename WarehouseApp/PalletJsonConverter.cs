@@ -11,13 +11,24 @@ namespace WarehouseApp
 {
     public class PalletJsonConverter : JsonConverter<Pallet>
     {
-        public override Pallet Read(ref Utf8JsonReader reader,
+        
+        public override Pallet? Read(ref Utf8JsonReader reader,
                                       Type typeToConvert,
                                       JsonSerializerOptions options)
         {
             var name = reader.GetString();
 
-            var source = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(name);
+            if (name == null)
+            {
+                return null;
+            }
+
+            Dictionary<string, JsonElement>? source = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(name);
+
+            if (source == null)
+            {
+                return null;
+            }
 
             var category = new Pallet(0, 0, 0);
 

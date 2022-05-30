@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace WarehouseApp
 {
-    internal class BoxJsonConverter : JsonConverter<Box>
+    internal class WarehouseJsonConverter : JsonConverter<Box>
     {
         public override Box? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
