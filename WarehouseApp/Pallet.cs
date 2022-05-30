@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace WarehouseApp
 {
+    [JsonConverter(typeof(PalletJsonConverter))]
     public class Pallet: Scalable
     {
         public const int OwnWeight = 30;

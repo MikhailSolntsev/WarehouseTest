@@ -33,14 +33,12 @@ namespace WarehouseApp
             BoxId = Guid.NewGuid().ToString();
         }
 
-        [JsonConstructor]
         public Box(int height, int width, int length, DateTime? expirationDate, string boxId, int weight) : base(height, width, length)
         {
             this.expirationDate = expirationDate;
             this.BoxId = boxId;
             Weight = weight;
         }
-        [JsonConstructor]
         public Box(int height, int width, int length, string expirationDate, string boxId, int weight) : base(height, width, length)
         {
             this.expirationDate = DateTime.Parse(expirationDate);

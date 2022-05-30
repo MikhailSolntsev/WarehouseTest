@@ -20,7 +20,6 @@ namespace WarehouseApp
             Width = width;
             Length = length;
         }
-        [JsonIgnore]
         virtual public int Volume { get { return Height * Width * Length; } }
         virtual public DateTime ExpirationDate { get; }
     }
