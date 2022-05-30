@@ -3,9 +3,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Linq.Expressions;
-using System.Linq;
 using WarehouseApp;
 
 namespace WarehouseTest
@@ -27,7 +24,7 @@ namespace WarehouseTest
 
             Assert.Equal("[7]", text);
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
         [Fact]
         public void CanWriteObjectToFile()
@@ -47,7 +44,7 @@ namespace WarehouseTest
 
             Assert.Equal("[{\"name\":\"John\",\"value\":10}]", text);
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
 
         [Fact]
@@ -57,7 +54,7 @@ namespace WarehouseTest
 
             JsonFileStorage storage = new JsonFileStorage(fileName);
 
-            WriteStringToFile(fileName, "[7]");
+            FileHelper.WriteStringToFile(fileName, "[7]");
             
             var values = storage.ReadValues<int>();
 
@@ -67,7 +64,7 @@ namespace WarehouseTest
 
             Assert.Equal(7, values[0]);
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
         [Fact]
         public void CanReadObjectFromFile()
@@ -76,7 +73,7 @@ namespace WarehouseTest
 
             JsonFileStorage storage = new JsonFileStorage(fileName);
 
-            WriteStringToFile(fileName, "[{\"name\":\"John\",\"value\":10}]");
+            FileHelper.WriteStringToFile(fileName, "[{\"name\":\"John\",\"value\":10}]");
 
             var values = storage.ReadValues<SimpleData>();
 
@@ -88,7 +85,7 @@ namespace WarehouseTest
 
             Assert.Equal(sample, values[0]);
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
 
         [Fact]
@@ -116,7 +113,7 @@ namespace WarehouseTest
 
             Assert.Equal(23, readed[1].Weight);
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
 
         [Fact]
@@ -163,7 +160,7 @@ namespace WarehouseTest
                 Assert.Contains(key, possibleKeys);
             }
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
 
         private void StorageStoresAllMainFields(List<string> possibleKeys, Action<string> writeSampleAction)
@@ -186,7 +183,7 @@ namespace WarehouseTest
                 Assert.Contains(key, dictionary.Keys);
             }
 
-            DeleteFileIfExists(fileName);
+            FileHelper.DeleteFileIfExists(fileName);
         }
 
         private static List<Dictionary<string, object>>? ReadSampleFromFile(string fileName)
@@ -244,22 +241,6 @@ namespace WarehouseTest
                 "height",
                 "palletId"
             };
-        }
-
-        private void DeleteFileIfExists(string fileName)
-        {
-            FileInfo file = new FileInfo(fileName);
-            if (!file.Exists)
-            {
-                File.Delete(file.FullName);
-            }
-        }
-
-        private void WriteStringToFile(string fileName, string value)
-        {
-            StreamWriter text = File.CreateText(fileName);
-            text.Write(value);
-            text.Close();
         }
 
     }

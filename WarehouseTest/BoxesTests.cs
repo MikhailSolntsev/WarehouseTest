@@ -1,6 +1,5 @@
 using Xunit;
 using System;
-
 using WarehouseApp;
 
 namespace WarehouseTest
