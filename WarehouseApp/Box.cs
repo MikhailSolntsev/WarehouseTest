@@ -45,5 +45,38 @@ namespace WarehouseApp
             this.BoxId = boxId;
             Weight = weight;
         }
+
+        public void WriteBox(string delimeter = "")
+        {
+            ConsoleColor consoleColor = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"{delimeter}Box l:");
+            Console.ForegroundColor = consoleColor;
+            Console.Write(Length);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" w:");
+            Console.ForegroundColor = consoleColor;
+            Console.Write(Width);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" h:");
+            Console.ForegroundColor = consoleColor;
+            Console.Write(Height);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" weight:");
+            Console.ForegroundColor = consoleColor;
+            Console.Write(Weight);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" exp.date:");
+            Console.ForegroundColor = consoleColor;
+            Console.Write($"{ExpirationDate:dd.MM.yyyy}");
+
+            Console.ForegroundColor = consoleColor;
+            Console.WriteLine();
+        }
     }
 }

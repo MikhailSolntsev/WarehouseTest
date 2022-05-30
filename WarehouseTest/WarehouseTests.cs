@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using WarehouseApp;
 
 namespace WarehouseTest
@@ -9,13 +10,34 @@ namespace WarehouseTest
     public class WarehouseTests
     {
         [Fact]
+        public void WarehouseSelectionCorrect()
+        {
+            Dictionary<string, Pallet> pallets = new();
+
+            Pallet pallet = new(13, 17, 19);
+            pallets.Add(pallet.PalletId, pallet);
+
+            Box box = new(3, 5, 7, DateTime.Now);
+            pallet.AddBox(box);
+
+            var palletsOnly = pallets.Values.ToList();
+
+            var ids = palletsOnly
+                    .Select(pallet => (pallet.PalletId, pallet.Boxes))
+                    .Select(pair => pair.Boxes.Select(box => new PalletBoxContainer(pair.PalletId, box.BoxId)))
+                    .SelectMany(list => list)
+                    .ToList();
+
+            Assert.Equal(typeof(List<PalletBoxContainer>), ids.GetType());
+        }
+        [Fact]
         public void WarehouseCanSaveInFiles()
         {
             string boxes = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            string palletes = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string pallets = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             string containers = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-            Warehouse warehouse = new Warehouse(boxes, palletes, containers);
+            Warehouse warehouse = new Warehouse(boxes, pallets, containers);
 
             Pallet pallet = new(13, 17, 19);
             warehouse.AddPallet(pallet);
@@ -28,14 +50,14 @@ namespace WarehouseTest
             string data = File.ReadAllText(boxes);
             Assert.NotEmpty(data);
 
-            data = File.ReadAllText(palletes);
+            data = File.ReadAllText(pallets);
             Assert.NotEmpty(data);
 
             data = File.ReadAllText(containers);
             Assert.NotEmpty(data);
 
             FileHelper.DeleteFileIfExists(boxes);
-            FileHelper.DeleteFileIfExists(palletes);
+            FileHelper.DeleteFileIfExists(pallets);
             FileHelper.DeleteFileIfExists(containers);
         }
         [Fact]
@@ -62,11 +84,11 @@ namespace WarehouseTest
             FileHelper.DeleteFileIfExists(boxes);
         }
         [Fact]
-        public void WarehouseCanReadPalletesFromFile()
+        public void WarehouseCanReadPalletsFromFile()
         {
-            string palletes = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string pallets = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-            JsonFileStorage storage = new JsonFileStorage(palletes);
+            JsonFileStorage storage = new JsonFileStorage(pallets);
 
             List<Pallet> toWrite = new()
             {
@@ -76,12 +98,45 @@ namespace WarehouseTest
 
             storage.WriteValues(toWrite);
 
-            Warehouse warehouse = new("", palletes, "");
+            Warehouse warehouse = new("", pallets, "");
 
             warehouse.ReadFromFiles();
 
-            Assert.Equal(2, warehouse.Palletes.Count);
-            FileHelper.DeleteFileIfExists(palletes);
+            Assert.Equal(2, warehouse.Pallets.Count);
+            FileHelper.DeleteFileIfExists(pallets);
+        }
+        [Fact]
+        public void WarehouseCanReadContainersFromFile()
+        {
+            string boxes = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string pallets = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string containers = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            JsonFileStorage storage = new JsonFileStorage(pallets);
+            Pallet pallet = new(15, 17, 19);
+            List<Pallet> palletsToWrite = new() { pallet };
+            storage.WriteValues(palletsToWrite);
+
+            storage = new JsonFileStorage(boxes);
+            Box box = new(3, 7, 5, DateTime.Today);
+            List<Box> boxesToWrite = new() { box };
+            storage.WriteValues(boxesToWrite);
+
+            storage = new JsonFileStorage(containers);
+            List<PalletBoxContainer> containersToWrite = new() { new(pallet.PalletId, box.BoxId) };
+            storage.WriteValues(containersToWrite);
+
+            Warehouse warehouse = new(boxes, pallets, containers);
+
+            warehouse.ReadFromFiles();
+
+            Assert.Single(warehouse.Pallets);
+            Assert.Single(warehouse.Boxes);
+            //Assert.Equal(1, warehouse.Pallets.Count);
+
+            FileHelper.DeleteFileIfExists(boxes);
+            FileHelper.DeleteFileIfExists(pallets);
+            FileHelper.DeleteFileIfExists(containers);
         }
         [Fact]
         public void WarehouseCantStoreBoxTwice()
@@ -105,7 +160,7 @@ namespace WarehouseTest
             warehouse.AddPallet(pallet);
             warehouse.AddPallet(pallet);
 
-            Assert.Single(warehouse.Palletes);
+            Assert.Single(warehouse.Pallets);
         }
         [Fact]
         public void WarehousePalletCantStoreBoxTwice()

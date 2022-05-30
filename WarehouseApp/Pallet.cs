@@ -52,5 +52,38 @@ namespace WarehouseApp
             }
             boxes.Add(box);
         }
+
+        public void WritePallet(string delimeter = "")
+        {
+            ConsoleColor consoleColor = Console.ForegroundColor;
+            
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write($"{delimeter}Pallet l:");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(Length);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" w:");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(Width);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" h:");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(Height);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" weight:");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(Weight);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" exp.date:");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write($"{ ExpirationDate:dd.MM.yyyy}");
+
+            Console.ForegroundColor = consoleColor;
+            Console.WriteLine();
+        }
     }
 }
