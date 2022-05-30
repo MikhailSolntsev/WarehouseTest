@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace WarehouseApp
 {
-    public class JsonFileStorage: IStorage
+    public class JsonFileStorage
     {
         private string fileName;
         public JsonFileStorage(string fileName)
@@ -18,12 +18,15 @@ namespace WarehouseApp
 
         public List<T> ReadValues<T>()
         {
-            List<T> result;
+            List<T>? result = null;
 
             using (Stream fileStream = File.OpenRead(fileName))
             {
-                JsonSerializerOptions options = SerializerOptions();
-                result = JsonSerializer.Deserialize<List<T>>(fileStream, options);
+                if (fileStream != null)
+                {
+                    JsonSerializerOptions options = SerializerOptions();
+                    result = JsonSerializer.Deserialize<List<T>>(fileStream, options);
+                }
             }
 
             return result ?? new List<T>();

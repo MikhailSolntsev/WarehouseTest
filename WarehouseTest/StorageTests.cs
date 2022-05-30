@@ -19,7 +19,7 @@ namespace WarehouseTest
 
             List<int> values = new List<int>() { 7 };
 
-            IStorage storage = new JsonFileStorage(fileName);
+            JsonFileStorage storage = new JsonFileStorage(fileName);
 
             storage.WriteValues(values);
 
@@ -39,7 +39,7 @@ namespace WarehouseTest
                 new() { Name = "John", Value = 10 }
             };
 
-            IStorage storage = new JsonFileStorage(fileName);
+            JsonFileStorage storage = new JsonFileStorage(fileName);
 
             storage.WriteValues(values);
 
@@ -55,7 +55,7 @@ namespace WarehouseTest
         {
             string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-            IStorage storage = new JsonFileStorage(fileName);
+            JsonFileStorage storage = new JsonFileStorage(fileName);
 
             WriteStringToFile(fileName, "[7]");
             
@@ -74,7 +74,7 @@ namespace WarehouseTest
         {
             string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-            IStorage storage = new JsonFileStorage(fileName);
+            JsonFileStorage storage = new JsonFileStorage(fileName);
 
             WriteStringToFile(fileName, "[{\"name\":\"John\",\"value\":10}]");
 
@@ -90,6 +90,35 @@ namespace WarehouseTest
 
             DeleteFileIfExists(fileName);
         }
+
+        [Fact]
+        public void BoxCanBereaded()
+        {
+            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            JsonFileStorage storage = new JsonFileStorage(fileName);
+
+            List<Box> toWrite = new()
+            {
+                new(3, 5, 7, DateTime.Today) { Weight = 13 },
+                new(15, 17, 19, DateTime.Today) { Weight = 23 }
+            };
+
+            storage.WriteValues(toWrite);
+
+            string text = File.ReadAllText(fileName);
+
+            List<Box> readed = storage.ReadValues<Box>();
+
+            Assert.Equal(2, readed.Count);
+
+            Assert.Equal(5, readed[0].Width);
+
+            Assert.Equal(23, readed[1].Weight);
+
+            DeleteFileIfExists(fileName);
+        }
+
         [Fact]
         public void BoxStoresOnlyMainFields()
         {
@@ -122,6 +151,11 @@ namespace WarehouseTest
             
             List<Dictionary<string, object>>? fileContent = ReadSampleFromFile(fileName);
 
+            if (fileContent == null)
+            {
+                throw new NullReferenceException("File content is null");
+            }
+
             Dictionary<string, object> dictionary = fileContent[0];
 
             foreach (string key in dictionary.Keys)
@@ -139,7 +173,12 @@ namespace WarehouseTest
             writeSampleAction(fileName);
 
             List<Dictionary<string, object>>? fileContent = ReadSampleFromFile(fileName);
-
+            
+            if (fileContent is null)
+            {
+                throw new NullReferenceException("File content is null");
+            }
+            
             Dictionary<string, object> dictionary = fileContent[0];
 
             foreach (string key in possibleKeys)
@@ -167,16 +206,16 @@ namespace WarehouseTest
 
         private static void WriteSampleBox(string fileName)
         {
-            IStorage storage = new JsonFileStorage(fileName);
+            JsonFileStorage storage = new JsonFileStorage(fileName);
 
-            List<Box> toWrite = new() { new(3, 5, 7, DateTime.Today) { BoxId = 11, Weight = 13 } };
+            List<Box> toWrite = new() { new(3, 5, 7, DateTime.Today) { Weight = 13 } };
 
             storage.WriteValues(toWrite);
         }
 
         private static void WriteSamplePallet(string fileName)
         {
-            IStorage storage = new JsonFileStorage(fileName);
+            JsonFileStorage storage = new JsonFileStorage(fileName);
 
             List<Pallet> toWrite = new() { new(3, 5, 7) { PalletId = 11} };
 
@@ -228,25 +267,22 @@ namespace WarehouseTest
 
     internal class SimpleData
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Value { get; set; }
 
         public override bool Equals(object? obj)
         {
-            SimpleData second = obj as SimpleData;
-
-            return Name.Equals(second.Name) && Value == second.Value;
+            SimpleData? second = obj as SimpleData;
+            if (string.IsNullOrEmpty(Name))
+            {
+                return false;
+            }
+            return Name.Equals(second?.Name) && Value == second.Value;
         }
-    }
 
-    internal class Storage
-    {
-        private Dictionary<int, Box> dict;
-
-        public void Store()
+        public override int GetHashCode()
         {
-            IStorage storage = new JsonFileStorage("");
-            storage.WriteValues(dict.Values.ToList());
+            throw new NotImplementedException();
         }
     }
 }
