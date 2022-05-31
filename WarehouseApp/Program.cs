@@ -1,4 +1,5 @@
 ﻿using WarehouseApp;
+using WarehouseApp.Data;
 using static System.Console;
 
 Warehouse warehouse = PrepareCollection();
@@ -28,11 +29,7 @@ void GroupByDateSortByDateByWeight(Warehouse warehouse)
         Console.WriteLine($"Group expiration date: {group.Date}");
         foreach (var pallet in group.Pallets)
         {
-            pallet.WritePallet("   ");
-            //foreach (var box in pallet.Boxes)
-            //{
-            //    box.WriteBox("      ");
-            //}
+            pallet.WriteElement("   Pallet");
         }
     }
 
@@ -47,20 +44,20 @@ void ThreePalletsWithMaximumExpirationDate(Warehouse warehouse)
     var allPallets = warehouse.Pallets.Values;
 
     //var maxBoxes = allPallets
-    //    .Select(pallet => pallet.Boxes.Select(box => new { PalletId = pallet.PalletId, BoxId = box.BoxId, Date = box.ExpirationDate }))
+    //    .Select(pallet => pallet.Boxes.Select(box => new { Id = pallet.Id, Id = box.Id, Date = box.ExpirationDate }))
     //    .SelectMany(list => list)
     //    .OrderByDescending(element => element.Date)
     //    .Take(3)
-    //    .Select(element => element.PalletId);
+    //    .Select(element => element.Id);
 
     var maxBoxes = allPallets
-        .Select(pallet => new { PalletId = pallet.PalletId, MaxDate = pallet.Boxes.Max(box => box.ExpirationDate) })
+        .Select(pallet => new { PalletId = pallet.Id, MaxDate = pallet.Boxes.Max(box => box.ExpirationDate) })
         .OrderByDescending(element => element.MaxDate)
         .Take(3)
         .Select(element => element.PalletId);
 
     var pallets = allPallets
-        .Where(pallet => maxBoxes.Contains(pallet.PalletId));
+        .Where(pallet => maxBoxes.Contains(pallet.Id));
 
     WriteList(pallets);
 
@@ -104,7 +101,8 @@ static void CreateCollection(Warehouse warehouse)
         Pallet pallet = pallets[randomPallet];
 
         int randomDate = random.Next(maxDates);
-        Box box = new(2, 3, 4, dates[randomDate]) { Weight = random.Next(10, 20)};
+        int randomWeight = random.Next(10, 20);
+        Box box = new(2, 3, 4, randomWeight, dates[randomDate]);
         warehouse.AddBoxToPallet(pallet, box);
     }
 }
@@ -115,11 +113,11 @@ static void WriteList(IEnumerable<Pallet> pallets)
 
     foreach (Pallet pallet in pallets)
     {
-        pallet.WritePallet();
+        pallet.WriteElement("Pallet");
 
         foreach (Box box in pallet.Boxes)
         {
-            box.WriteBox("   ");
+            box.WriteElement("   Box");
         }
     }
 }

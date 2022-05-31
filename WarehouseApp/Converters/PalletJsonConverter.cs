@@ -6,8 +6,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using WarehouseApp.Data;
 
-namespace WarehouseApp
+namespace WarehouseApp.Converters
 {
     public class PalletJsonConverter : JsonConverter<Pallet>
     {
@@ -23,7 +24,7 @@ namespace WarehouseApp
                                       Type typeToConvert,
                                       JsonSerializerOptions options)
         {
-           return converter.Read(ref reader);
+            return converter.Read(ref reader);
         }
 
         public override void Write(Utf8JsonWriter writer,
@@ -35,22 +36,22 @@ namespace WarehouseApp
 
         private Pallet PalletFromDictionary(Dictionary<string, object> dictionary)
         {
-            Pallet pallet= new(
+            Pallet pallet = new(
                 (int)dictionary["height"],
                 (int)dictionary["width"],
                 (int)dictionary["length"],
-                (string)dictionary["palletId"]);
+                (int)dictionary["Id"]);
             return pallet;
         }
         private void JsonFromPallet(Utf8JsonWriter writer, Pallet value)
         {
             writer.WriteStartObject();
 
-            writer.WriteString("palletId", value.PalletId);
+            writer.WriteNumber("Id", value.Id);
             writer.WriteNumber("height", value.Height);
             writer.WriteNumber("width", value.Width);
             writer.WriteNumber("length", value.Length);
-            
+
             writer.WriteEndObject();
         }
     }

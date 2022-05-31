@@ -10,6 +10,11 @@ namespace WarehouseTest
             if (!file.Exists)
             {
                 File.Delete(file.FullName);
+                System.Console.WriteLine($"File {file.Name} deleted");
+            }
+            else
+            {
+                System.Console.WriteLine($"File {file.Name} not found");
             }
         }
 

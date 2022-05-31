@@ -1,6 +1,6 @@
 ﻿using Xunit;
 using System;
-using WarehouseApp;
+using WarehouseApp.Data;
 
 namespace WarehouseTest
 {
@@ -11,8 +11,8 @@ namespace WarehouseTest
         {
             Pallet pallet = new(10, 10, 10);
 
-            Box box1 = new(2, 3, 4, DateTime.Now);
-            Box box2 = new(4, 5, 6, DateTime.Now);
+            Box box1 = new(2, 3, 4, 0, DateTime.Now);
+            Box box2 = new(4, 5, 6, 0, DateTime.Now);
             
             pallet.AddBox(box1);
             pallet.AddBox(box2);
@@ -26,8 +26,8 @@ namespace WarehouseTest
         {
             Pallet pallet = new(10, 10, 10);
 
-            Box box1 = new(2, 3, 4, DateTime.Now) { Weight = 5 };
-            Box box2 = new(4, 5, 6, DateTime.Now) { Weight = 7 };
+            Box box1 = new(2, 3, 4, 5, DateTime.Now);
+            Box box2 = new(4, 5, 6, 7, DateTime.Now);
 
             pallet.AddBox(box1);
             pallet.AddBox(box2);
@@ -43,8 +43,8 @@ namespace WarehouseTest
 
             DateTime yesterday = DateTime.Today + TimeSpan.FromDays(-1);
 
-            Box box1 = new(2, 3, 4, DateTime.Today);
-            Box box2 = new(4, 5, 6, yesterday);
+            Box box1 = new(2, 3, 4, 0, DateTime.Today);
+            Box box2 = new(4, 5, 6, 0, yesterday);
 
             pallet.AddBox(box1);
             pallet.AddBox(box2);
@@ -65,7 +65,7 @@ namespace WarehouseTest
         {
             Pallet pallet = new(10, 10, 10);
 
-            Box box = new(11, 3, 5, DateTime.Today);
+            Box box = new(11, 3, 5, 7, DateTime.Today);
 
             try
             {
@@ -82,7 +82,7 @@ namespace WarehouseTest
         {
             Pallet pallet = new(10, 10, 10);
 
-            Box box = new(3, 11, 5, DateTime.Today);
+            Box box = new(3, 11, 5, 7, DateTime.Today);
 
             try
             {
@@ -99,7 +99,7 @@ namespace WarehouseTest
         {
             Pallet pallet = new(10, 10, 10);
 
-            Box box = new(3, 5, 11, DateTime.Today);
+            Box box = new(3, 5, 11, 7, DateTime.Today);
 
             try
             {

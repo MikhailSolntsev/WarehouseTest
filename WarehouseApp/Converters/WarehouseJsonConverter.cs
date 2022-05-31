@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace WarehouseApp
+namespace WarehouseApp.Converters
 {
     internal class WarehouseJsonConverter<T>
     {
@@ -66,7 +66,7 @@ namespace WarehouseApp
             return jsonReader.Invoke(dictionary);
         }
 
-        
+
         public void Write(Utf8JsonWriter writer, T value)
         {
             jsonWriter.Invoke(writer, value);

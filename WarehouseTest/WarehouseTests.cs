@@ -4,27 +4,28 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using WarehouseApp;
+using WarehouseApp.Data;
 
 namespace WarehouseTest
 {
     public class WarehouseTests
     {
-        [Fact]
+        [Fact(DisplayName ="Выборка работает красиво")]
         public void WarehouseSelectionCorrect()
         {
-            Dictionary<string, Pallet> pallets = new();
+            Dictionary<int, Pallet> pallets = new();
 
             Pallet pallet = new(13, 17, 19);
-            pallets.Add(pallet.PalletId, pallet);
+            pallets.Add(pallet.Id, pallet);
 
-            Box box = new(3, 5, 7, DateTime.Now);
+            Box box = new(3, 5, 7, 11, DateTime.Now);
             pallet.AddBox(box);
 
             var palletsOnly = pallets.Values.ToList();
 
             var ids = palletsOnly
-                    .Select(pallet => (pallet.PalletId, pallet.Boxes))
-                    .Select(pair => pair.Boxes.Select(box => new PalletBoxContainer(pair.PalletId, box.BoxId)))
+                    .Select(pallet => (pallet.Id, pallet.Boxes))
+                    .Select(pair => pair.Boxes.Select(box => new PalletBoxContainer(pair.Id, box.Id)))
                     .SelectMany(list => list)
                     .ToList();
 
@@ -42,23 +43,27 @@ namespace WarehouseTest
             Pallet pallet = new(13, 17, 19);
             warehouse.AddPallet(pallet);
 
-            Box box = new(3, 5, 7, DateTime.Now);
-            warehouse.AddBoxToPallet(pallet, box);
+            Box box = new(3, 5, 7, 11, DateTime.Now);
+            //warehouse.AddBoxToPallet(pallet, box);
 
             warehouse.SaveToFiles();
+            try
+            {
+                string data = File.ReadAllText(boxes);
+                Assert.NotEmpty(data);
 
-            string data = File.ReadAllText(boxes);
-            Assert.NotEmpty(data);
+                data = File.ReadAllText(pallets);
+                Assert.NotEmpty(data);
 
-            data = File.ReadAllText(pallets);
-            Assert.NotEmpty(data);
-
-            data = File.ReadAllText(containers);
-            Assert.NotEmpty(data);
-
-            FileHelper.DeleteFileIfExists(boxes);
-            FileHelper.DeleteFileIfExists(pallets);
-            FileHelper.DeleteFileIfExists(containers);
+                data = File.ReadAllText(containers);
+                Assert.NotEmpty(data);
+            }
+            finally
+            {
+                FileHelper.DeleteFileIfExists(boxes);
+                FileHelper.DeleteFileIfExists(pallets);
+                FileHelper.DeleteFileIfExists(containers);
+            }
         }
         [Fact]
         public void WarehouseCanReadBoxesFromFile()
@@ -69,8 +74,8 @@ namespace WarehouseTest
 
             List<Box> toWrite = new()
             {
-                new(3, 5, 7, DateTime.Today) { Weight = 13 },
-                new(15, 17, 19, DateTime.Today) { Weight = 23 }
+                new(3, 5, 7, 0, DateTime.Today),
+                new(13, 17, 19, 0, DateTime.Today)
             };
 
             storage.WriteValues(toWrite);
@@ -118,12 +123,12 @@ namespace WarehouseTest
             storage.WriteValues(palletsToWrite);
 
             storage = new JsonFileStorage(boxes);
-            Box box = new(3, 7, 5, DateTime.Today);
+            Box box = new(3, 7, 5, 0, DateTime.Today);
             List<Box> boxesToWrite = new() { box };
             storage.WriteValues(boxesToWrite);
 
             storage = new JsonFileStorage(containers);
-            List<PalletBoxContainer> containersToWrite = new() { new(pallet.PalletId, box.BoxId) };
+            List<PalletBoxContainer> containersToWrite = new() { new(pallet.Id, box.Id) };
             storage.WriteValues(containersToWrite);
 
             Warehouse warehouse = new(boxes, pallets, containers);
@@ -143,7 +148,7 @@ namespace WarehouseTest
         {
             Warehouse warehouse = new Warehouse("", "", "");
 
-            Box box = new(3, 5, 7, DateTime.Now);
+            Box box = new(3, 5, 7, 11, DateTime.Now);
 
             warehouse.AddBox(box);
             warehouse.AddBox(box);
@@ -171,7 +176,7 @@ namespace WarehouseTest
 
             warehouse.AddPallet(pallet);
 
-            Box box = new(3, 5, 7, DateTime.Now);
+            Box box = new(3, 5, 7, 11, DateTime.Now);
 
             warehouse.AddBoxToPallet(pallet, box);
             warehouse.AddBoxToPallet(pallet, box);

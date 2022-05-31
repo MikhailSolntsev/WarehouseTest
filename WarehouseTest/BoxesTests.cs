@@ -1,6 +1,6 @@
 using Xunit;
 using System;
-using WarehouseApp;
+using WarehouseApp.Data;
 
 namespace WarehouseTest
 {
@@ -9,21 +9,21 @@ namespace WarehouseTest
         [Fact]
         public void BoxVolumeCalculatesCorrect()
         {
-            Box box = new(10, 20, 30, DateTime.Now);
-            Assert.Equal(6000, box.Volume);
+            Box box = new(3, 5, 7, 11, DateTime.Now);
+            Assert.Equal(105, box.Volume);
         }
         [Fact]
         public void BoxCanStoreExpirationDate()
         {
             DateTime today = DateTime.Today;
-            Box box = new(2, 3, 4, bestBefore: today);
+            Box box = new(3, 5, 7, 11, today);
             Assert.Equal(today, box.ExpirationDate);
         }
         [Fact]
         public void BoxCanCalculateExpirationDate()
         {
             DateTime today = DateTime.Today;
-            Box box = new(2, 3, 4, produced: today);
+            Box box = new(3, 5, 7, 11, produced: today);
             DateTime after100Days = today + TimeSpan.FromDays(100);
             Assert.Equal(after100Days, box.ExpirationDate);
         }
@@ -32,7 +32,7 @@ namespace WarehouseTest
         {
             try
             {
-                Box box = new(1, 2, 3);
+                Box box = new(3, 5, 7, 11);
                 Assert.True(false, "Box creating without dates does not throws any exception");
             }
             catch (Exception ex)

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using WarehouseApp.Data;
 
-namespace WarehouseApp
+namespace WarehouseApp.Converters
 {
     internal class BoxJsonConverter : JsonConverter<Box>
     {
@@ -29,19 +30,20 @@ namespace WarehouseApp
 
         private Box BoxFromDictioanry(Dictionary<string, object> dictionary)
         {
-            Box box = new (
+            Box box = new(
                 (int)dictionary["height"],
                 (int)dictionary["width"],
                 (int)dictionary["length"],
-                (string)dictionary["expirationDate"],
-                (string)dictionary["boxId"],
-                (int)dictionary["weight"]);
+                (int)dictionary["weight"],
+                (DateTime)dictionary["expirationDate"],
+                (int)dictionary["Id"]
+                );
             return box;
         }
         private void JsonFromBox(Utf8JsonWriter writer, Box value)
         {
             writer.WriteStartObject();
-            writer.WriteString("boxId", value.BoxId);
+            writer.WriteNumber("boxId", value.Id);
             writer.WriteString("expirationDate", value.ExpirationDate);
             writer.WriteNumber("height", value.Height);
             writer.WriteNumber("width", value.Width);

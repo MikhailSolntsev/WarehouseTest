@@ -9,11 +9,11 @@ namespace WarehouseApp
     public class PalletBoxContainer
     {
         [JsonInclude]
-        public string PalletId { get; set; }
+        public int PalletId { get; set; }
         [JsonInclude]
-        public string BoxId { get; set; }
+        public int BoxId { get; set; }
 
-        public PalletBoxContainer(string palletId, string boxId)
+        public PalletBoxContainer(int palletId, int boxId)
         {
             PalletId = palletId;
             BoxId = boxId;

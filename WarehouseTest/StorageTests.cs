@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
 using WarehouseApp;
+using WarehouseApp.Data;
 
 namespace WarehouseTest
 {
@@ -97,8 +98,8 @@ namespace WarehouseTest
 
             List<Box> toWrite = new()
             {
-                new(3, 5, 7, DateTime.Today) { Weight = 13 },
-                new(15, 17, 19, DateTime.Today) { Weight = 23 }
+                new(3, 5, 7, 11, DateTime.Today),
+                new(15, 17, 19, 23, DateTime.Today)
             };
 
             storage.WriteValues(toWrite);
@@ -205,7 +206,7 @@ namespace WarehouseTest
         {
             JsonFileStorage storage = new JsonFileStorage(fileName);
 
-            List<Box> toWrite = new() { new(3, 5, 7, DateTime.Today) { Weight = 13 } };
+            List<Box> toWrite = new() { new(3, 5, 7, 13, DateTime.Today) };
 
             storage.WriteValues(toWrite);
         }
