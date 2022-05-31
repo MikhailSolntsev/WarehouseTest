@@ -44,14 +44,25 @@ void ThreePalletsWithMaximumExpirationDate(Warehouse warehouse)
     Console.WriteLine();
     Console.WriteLine("Three pallets with maximum expiration dates sorted by weight");
 
-    var pallets = warehouse.Pallets.Values;
+    var allPallets = warehouse.Pallets.Values;
 
-    var result = pallets
-        .OrderByDescending(pallet => pallet.ExpirationDate)
+    //var maxBoxes = allPallets
+    //    .Select(pallet => pallet.Boxes.Select(box => new { PalletId = pallet.PalletId, BoxId = box.BoxId, Date = box.ExpirationDate }))
+    //    .SelectMany(list => list)
+    //    .OrderByDescending(element => element.Date)
+    //    .Take(3)
+    //    .Select(element => element.PalletId);
+
+    var maxBoxes = allPallets
+        .Select(pallet => new { PalletId = pallet.PalletId, MaxDate = pallet.Boxes.Max(box => box.ExpirationDate) })
+        .OrderByDescending(element => element.MaxDate)
         .Take(3)
-        .OrderBy(pallet => pallet.Weight);
+        .Select(element => element.PalletId);
 
-    WriteList(result);
+    var pallets = allPallets
+        .Where(pallet => maxBoxes.Contains(pallet.PalletId));
+
+    WriteList(pallets);
 
 }
 
@@ -71,8 +82,8 @@ static Warehouse PrepareCollection()
 
 static void CreateCollection(Warehouse warehouse)
 {
-    const int maxPallets = 4;
-    const int maxDates = 10;
+    const int maxPallets = 6;
+    const int maxDates = 20;
 
     List<DateTime> dates = Enumerable
         .Range(1, maxDates)
