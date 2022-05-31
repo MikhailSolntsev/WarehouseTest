@@ -47,7 +47,7 @@ void ThreePalletsWithMaximumExpirationDate(Warehouse warehouse)
     var pallets = warehouse.Pallets.Values;
 
     var result = pallets
-        .OrderBy(pallet => pallet.ExpirationDate)
+        .OrderByDescending(pallet => pallet.ExpirationDate)
         .Take(3)
         .OrderBy(pallet => pallet.Weight);
 
