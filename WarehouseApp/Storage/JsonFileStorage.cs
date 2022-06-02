@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace WarehouseApp
+namespace WarehouseApp.Storage
 {
     public class JsonFileStorage
     {
@@ -25,19 +25,19 @@ namespace WarehouseApp
                 if (fileStream != null)
                 {
                     JsonSerializerOptions options = SerializerOptions();
-                    result = JsonSerializer.Deserialize<List<T>>(fileStream, options);
+                    result = System.Text.Json.JsonSerializer.Deserialize<List<T>>(fileStream, options);
                 }
             }
 
             return result ?? new List<T>();
         }
-        
+
         public void WriteValues<T>(List<T> value)
         {
-            using(Stream fileStream = File.OpenWrite(fileName))
+            using (Stream fileStream = File.OpenWrite(fileName))
             {
                 JsonSerializerOptions options = SerializerOptions();
-                JsonSerializer.Serialize(fileStream, value, options);
+                System.Text.Json.JsonSerializer.Serialize(fileStream, value, options);
             }
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WarehouseApp;
 using WarehouseApp.Data;
+using WarehouseApp.Storage;
 
 namespace WarehouseTest
 {

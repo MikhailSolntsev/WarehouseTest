@@ -22,8 +22,6 @@ namespace WarehouseApp.Data
         private List<Box> boxes = new();
         public ImmutableList<Box> Boxes { get => ImmutableList.Create(boxes.ToArray()); }
 
-
-
         public Pallet(int height, int width, int length) : base(height, width, length, 0)
         {
             Id = Interlocked.Increment(ref nextId);

@@ -3,247 +3,109 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
-using WarehouseApp;
+using System.Linq;
 using WarehouseApp.Data;
+using WarehouseApp.Storage;
 
 namespace WarehouseTest
 {
     public class StorageTests
     {
-        [Fact]
-        public void CanWriteIntToFile()
+        [Fact(DisplayName = "Cериализация и десериализация произвольных объектов List<T>")]
+        public void CanWriteAndReadObjectWithJsonStream()
         {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var written = SimpleData.SampleList();
 
-            List<int> values = new List<int>() { 7 };
+            JsonStreamSerializer storage = new();
 
-            JsonFileStorage storage = new JsonFileStorage(fileName);
-
-            storage.WriteValues(values);
-
-            string text = File.ReadAllText(fileName);
-
-            Assert.Equal("[7]", text);
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-        [Fact]
-        public void CanWriteObjectToFile()
-        {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            List<SimpleData> values = new()
+            using (MemoryStream stream = new())
             {
-                new() { Name = "John", Value = 10 }
-            };
+                storage.Serialize(stream, written);
 
-            JsonFileStorage storage = new JsonFileStorage(fileName);
+                stream.Seek(0, SeekOrigin.Begin);
 
-            storage.WriteValues(values);
+                List<SimpleData> readed = storage.Deserialize<SimpleData>(stream);
 
-            string text = File.ReadAllText(fileName);
-
-            Assert.Equal("[{\"name\":\"John\",\"value\":10}]", text);
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-
-        [Fact]
-        public void CanReadIntFromFile()
-        {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            JsonFileStorage storage = new JsonFileStorage(fileName);
-
-            FileHelper.WriteStringToFile(fileName, "[7]");
-            
-            var values = storage.ReadValues<int>();
-
-            Assert.Equal(typeof(List<int>), values.GetType());
-
-            Assert.Single(values);
-
-            Assert.Equal(7, values[0]);
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-        [Fact]
-        public void CanReadObjectFromFile()
-        {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            JsonFileStorage storage = new JsonFileStorage(fileName);
-
-            FileHelper.WriteStringToFile(fileName, "[{\"name\":\"John\",\"value\":10}]");
-
-            var values = storage.ReadValues<SimpleData>();
-
-            SimpleData sample = new() { Name = "John", Value = 10 };
-
-            Assert.Equal(typeof(List<SimpleData>), values.GetType());
-
-            Assert.Single(values);
-
-            Assert.Equal(sample, values[0]);
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-
-        [Fact]
-        public void BoxCanBereaded()
-        {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            JsonFileStorage storage = new JsonFileStorage(fileName);
-
-            List<Box> toWrite = new()
-            {
-                new(3, 5, 7, 11, DateTime.Today),
-                new(15, 17, 19, 23, DateTime.Today)
-            };
-
-            storage.WriteValues(toWrite);
-
-            string text = File.ReadAllText(fileName);
-
-            List<Box> readed = storage.ReadValues<Box>();
-
-            Assert.Equal(2, readed.Count);
-
-            Assert.Equal(5, readed[0].Width);
-
-            Assert.Equal(23, readed[1].Weight);
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-
-        [Fact]
-        public void BoxStoresOnlyMainFields()
-        {
-            var possibleKeys  = BoxMainFields();
-            StorageStoresOnlyMainFields(possibleKeys, WriteSampleBox);
-        }
-        [Fact]
-        public void BoxStoresAllMainFields()
-        {
-            var possibleKeys = BoxMainFields();
-            StorageStoresAllMainFields(possibleKeys, WriteSampleBox);
-        }
-        [Fact]
-        public void PalletStoresOnlyMainFields()
-        {
-            var possibleKeys = PalletMainFields();
-            StorageStoresOnlyMainFields(possibleKeys, WriteSamplePallet);
-        }
-        [Fact]
-        public void PalletStoresAllMainFields()
-        {
-            var possibleKeys = PalletMainFields();
-            StorageStoresAllMainFields(possibleKeys, WriteSamplePallet);
-        }
-        private void StorageStoresOnlyMainFields(List<string> possibleKeys, Action<string> writeSampleAction)
-        {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            writeSampleAction(fileName);
-            
-            List<Dictionary<string, object>>? fileContent = ReadSampleFromFile(fileName);
-
-            if (fileContent == null)
-            {
-                throw new NullReferenceException("File content is null");
+                Assert.True(readed.SequenceEqual(written), "Written an readed arrays are different");
             }
+        }
 
-            Dictionary<string, object> dictionary = fileContent[0];
+        [Fact(DisplayName = "Сохранение и чтение произвольных объектов в файл")]
+        public void CanWriteAndReadObjectWithFile()
+        {
+            string fileName = FileHelper.RandomFileName();
 
-            foreach (string key in dictionary.Keys)
+            FileStorage fileStorage = new FileStorage(fileName);
+
+            var written = SimpleData.SampleList();
+
+            try
             {
-                Assert.Contains(key, possibleKeys);
+                fileStorage.StoreValues(written);
+
+                List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
+
+                Assert.True(readed.SequenceEqual(written), "Written an readed arrays are different");
             }
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-
-        private void StorageStoresAllMainFields(List<string> possibleKeys, Action<string> writeSampleAction)
-        {
-            string fileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            writeSampleAction(fileName);
-
-            List<Dictionary<string, object>>? fileContent = ReadSampleFromFile(fileName);
-            
-            if (fileContent is null)
+            finally
             {
-                throw new NullReferenceException("File content is null");
+                FileHelper.DeleteFileIfExists(fileName);
             }
-            
-            Dictionary<string, object> dictionary = fileContent[0];
+        }
 
-            foreach (string key in possibleKeys)
+        [Fact(DisplayName = "Сохранение в некорректный файл бросает исключение")]
+        public void WritingWithWrongFileCauseException()
+        {
+            string fileName = "abirbalg*";
+
+            FileStorage fileStorage = new FileStorage(fileName);
+
+            var written = SimpleData.SampleList();
+
+            try
             {
-                Assert.Contains(key, dictionary.Keys);
+                fileStorage.StoreValues(written);
             }
-
-            FileHelper.DeleteFileIfExists(fileName);
-        }
-
-        private static List<Dictionary<string, object>>? ReadSampleFromFile(string fileName)
-        {
-            string json = File.ReadAllText(fileName);
-
-            JsonDocument document = JsonDocument.Parse(json);
-
-            var rawFileContent = document.RootElement.Deserialize(typeof(List<Dictionary<string, object>>));
-
-            Assert.NotNull(rawFileContent);
-
-            var fileContent = rawFileContent as List<Dictionary<string, object>>;
-
-            return fileContent;
-        }
-
-        private static void WriteSampleBox(string fileName)
-        {
-            JsonFileStorage storage = new JsonFileStorage(fileName);
-
-            List<Box> toWrite = new() { new(3, 5, 7, 13, DateTime.Today) };
-
-            storage.WriteValues(toWrite);
-        }
-
-        private static void WriteSamplePallet(string fileName)
-        {
-            JsonFileStorage storage = new JsonFileStorage(fileName);
-
-            List<Pallet> toWrite = new() { new(3, 5, 7) };
-
-            storage.WriteValues(toWrite);
-        }
-
-        private List<string> BoxMainFields()
-        {
-            return new List<string>()
+            finally
             {
-                "length",
-                "width",
-                "height",
-                "boxId",
-                "weight",
-                "expirationDate"
-            };
+                FileHelper.DeleteFileIfExists(fileName);
+            }
         }
 
-        private List<string> PalletMainFields()
+        [Fact(DisplayName = "Чтение из некорректного файла бросает исключение")]
+        public void ReadingWithWrongFileCauseException()
         {
-            return new List<string>()
+            string fileName = "abirbalg*";
+
+            FileStorage fileStorage = new FileStorage(fileName);
+
+            try
             {
-                "length",
-                "width",
-                "height",
-                "palletId"
-            };
+                List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
+
+                Assert.True(false, "Чтение из некорректного файла должно выдавать ошибку");
+            }
+            finally
+            {
+                FileHelper.DeleteFileIfExists(fileName);
+            }
         }
 
+        [Fact(DisplayName = "Магический тест, который не должен выполняться")]
+        public void ReadAndWriteWithWrongFileDoesNotCauseException()
+        {
+            string fileName = "12:abirbalg*";
+
+            FileStorage fileStorage = new FileStorage(fileName);
+
+            var written = SimpleData.SampleList();
+
+            fileStorage.StoreValues(written);
+
+            List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
+
+            Assert.True(readed.SequenceEqual(written), "Written an readed arrays are different");
+        }
     }
 
     internal class SimpleData
@@ -251,6 +113,15 @@ namespace WarehouseTest
         public string? Name { get; set; }
         public int Value { get; set; }
 
+        public static List<SimpleData> SampleList()
+        {
+            List<SimpleData> sampleList = new()
+            {
+                new() { Name = "John Doe", Value = 13 },
+                new() { Name = "Jane Smith", Value = 151 }
+            };
+            return sampleList;
+        }
         public override bool Equals(object? obj)
         {
             SimpleData? second = obj as SimpleData;

@@ -22,7 +22,7 @@ namespace WarehouseApp.Data
                 throw new ArgumentNullException(message);
             }
 
-            ExpirationDate = expirationDate ?? produced ?? DateTime.Today + TimeSpan.FromDays(period);
+            ExpirationDate = expirationDate ?? produced + TimeSpan.FromDays(period) ?? DateTime.Today;
             Id = Interlocked.Increment(ref nextId);
         }
         public Box(int height, int width, int length, int weight, DateTime expirationDate, int id) : base(height, width, length, weight)

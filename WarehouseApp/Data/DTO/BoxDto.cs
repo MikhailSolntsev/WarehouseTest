@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WarehouseApp.DTO
+namespace WarehouseApp.Data.DTO
 {
     public class BoxDto
     {
