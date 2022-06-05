@@ -6,7 +6,7 @@ namespace WarehouseTest
 {
     public class PalleteTests
     {
-        [Fact]
+        [Fact(DisplayName = "Объём палета вычисляется из собственного и вложенных коробок")]
         public void PalleteVolumeCalculatesCorrect()
         {
             Pallet pallet = new(10, 10, 10);
@@ -21,7 +21,7 @@ namespace WarehouseTest
 
             Assert.Equal(volume, pallet.Volume);
         }
-        [Fact]
+        [Fact(DisplayName = "Вес палета вычисляется из собственного и вложенных коробок")]
         public void PalleteWeightCalculatesCorrect()
         {
             Pallet pallet = new(10, 10, 10);
@@ -36,7 +36,7 @@ namespace WarehouseTest
 
             Assert.Equal(Weight, pallet.Weight);
         }
-        [Fact]
+        [Fact(DisplayName = "Срок годности вычисляется из минимального от вложенных коробок")]
         public void PalleteExpirationDateCalculatesFromBestBefore()
         {
             Pallet pallet = new(10, 10, 10);
@@ -60,7 +60,7 @@ namespace WarehouseTest
             pallet = new(10, 10, 10);
             Assert.Equal(DateTime.MinValue, pallet.ExpirationDate);
         }
-        [Fact]
+        [Fact(DisplayName = "Невозможно добавить коробку с высотой больше палета")]
         public void PalleteAddBoxLagreHeight()
         {
             Pallet pallet = new(10, 10, 10);
@@ -77,7 +77,7 @@ namespace WarehouseTest
                 Assert.Equal(typeof(ArgumentOutOfRangeException), ex.GetType());
             }
         }
-        [Fact]
+        [Fact(DisplayName = "Невозможно добавить коробку с шириной больше палета")]
         public void PalleteAddBoxLagreWidth()
         {
             Pallet pallet = new(10, 10, 10);
@@ -94,7 +94,7 @@ namespace WarehouseTest
                 Assert.Equal(typeof(ArgumentOutOfRangeException), ex.GetType());
             }
         }
-        [Fact]
+        [Fact(DisplayName = "Невозможно добавить коробку с длиной больше палета")]
         public void PalleteAddBoxLagreLength()
         {
             Pallet pallet = new(10, 10, 10);
