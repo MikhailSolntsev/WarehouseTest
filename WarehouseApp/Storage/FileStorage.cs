@@ -26,6 +26,12 @@ namespace WarehouseApp.Storage
         {
             List<T>? values = null;
 
+            FileInfo fileInfo = new FileInfo(fileName);
+            if (!fileInfo.Exists)
+            {
+                return new List<T>();
+            }
+
             using (Stream fileStream = File.OpenRead(fileName))
             {
                 values = serializer.Deserialize<T>(fileStream);

@@ -3,6 +3,4 @@
 **/obj
 **/.vs
 **/bin
-/WarehouseApp/containers.json
-/WarehouseApp/boxes.json
-/WarehouseApp/pallets.json
+/WarehouseApp/warehouse.json

@@ -91,20 +91,14 @@ namespace WarehouseTest
             }
         }
 
-        [Fact(DisplayName = "Магический тест, который не должен выполняться")]
-        public void ReadAndWriteWithWrongFileDoesNotCauseException()
+        [Fact(DisplayName = "Чтение из пустого файлы не вызывает исключения, возвращает пустой список")]
+        public void CorrectReadintFromNonexistingFile()
         {
-            string fileName = "12:abirbalg*";
+            string fileName = FileHelper.RandomFileName();
 
             FileStorage fileStorage = new FileStorage(fileName);
 
-            var written = SimpleData.SampleList();
-
-            fileStorage.StoreValues(written);
-
-            List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
-
-            Assert.True(readed.SequenceEqual(written), "Written an readed arrays are different");
+            var values = fileStorage.ReadValues<Pallet>();
         }
     }
 
