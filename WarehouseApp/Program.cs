@@ -4,7 +4,7 @@ using static System.Console;
 
 Warehouse warehouse = PrepareCollection();
 
-WriteList(warehouse.Pallets.Values);
+WriteList(warehouse.Pallets);
 
 GroupByDateSortByDateByWeight(warehouse);
 
@@ -16,7 +16,7 @@ void GroupByDateSortByDateByWeight(Warehouse warehouse)
     Console.WriteLine();
     Console.WriteLine("Grouped and sorted by expiration date and sorted in groups by weight");
 
-    var pallets = warehouse.Pallets.Values;
+    var pallets = warehouse.Pallets;
 
     var result = pallets
         .GroupBy(pallet => pallet.ExpirationDate)
@@ -41,7 +41,7 @@ void ThreePalletsWithMaximumExpirationDate(Warehouse warehouse)
     Console.WriteLine();
     Console.WriteLine("Three pallets with maximum expiration dates sorted by weight");
 
-    var allPallets = warehouse.Pallets.Values;
+    var allPallets = warehouse.Pallets;
 
     //var maxBoxes = allPallets
     //    .Select(pallet => pallet.Boxes.Select(box => new { Id = pallet.Id, Id = box.Id, Date = box.ExpirationDate }))
@@ -67,12 +67,12 @@ static Warehouse PrepareCollection()
 {
     Warehouse warehouse = new Warehouse();
 
-    warehouse.ReadFromFiles();
+    warehouse.ReadFromFile();
 
-    if (warehouse.Boxes.Count == 0)
+    if (warehouse.Pallets.Count == 0)
         CreateCollection(warehouse);
 
-    warehouse.SaveToFiles();
+    warehouse.SaveToFile();
 
     return warehouse;
 }
@@ -109,7 +109,7 @@ static void CreateCollection(Warehouse warehouse)
 
 static void WriteList(IEnumerable<Pallet> pallets)
 {
-    WriteLine("Pallets and their boxes:");
+    WriteLine("Pallets and their pallets:");
 
     foreach (Pallet pallet in pallets)
     {

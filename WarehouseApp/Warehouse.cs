@@ -4,126 +4,88 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WarehouseApp.Data;
+using WarehouseApp.Data.Converters;
+using WarehouseApp.Data.DTO;
 using WarehouseApp.Storage;
 
 namespace WarehouseApp
 {
     public class Warehouse
     {
-        private readonly string boxFileName;
+        private readonly string dataFileName;
 
-        private readonly string palletFileName;
-
-        private readonly string containerFileName;
-
-        private readonly Dictionary<int, Box> boxes = new();
-        private readonly Dictionary<int, Pallet> pallets = new();
-
-        public IReadOnlyDictionary<int, Box> Boxes { get => boxes; }
-        public IReadOnlyDictionary<int, Pallet> Pallets { get => pallets; }
-
+        private readonly HashSet<Pallet> pallets = new();
+        
+        public IReadOnlySet<Pallet> Pallets{ get => pallets; }
+        
         public Warehouse()
         {
-            boxFileName = Path.Combine(Environment.CurrentDirectory, "boxes.json");
-            palletFileName = Path.Combine(Environment.CurrentDirectory, "pallets.json");
-            containerFileName = Path.Combine(Environment.CurrentDirectory, "containers.json");
+            dataFileName = Path.Combine(Environment.CurrentDirectory, "warehouse.json");
         }
 
-        public Warehouse(string boxFileName, string palletFileName, string containerFileName)
+        public Warehouse(string dataFileName)
         {
-            this.boxFileName = boxFileName;
-            this.palletFileName = palletFileName;
-            this.containerFileName = containerFileName;
+            this.dataFileName = dataFileName;
         }
 
-        public void SaveToFiles()
+        public void SaveToFile()
         {
-            JsonFileStorage storage;
+            FileStorage storage = new(dataFileName);
 
-            if (!string.IsNullOrEmpty(boxFileName) && boxes.Count > 0)
+            List<PalletDto> values = new();
+
+            foreach (var pallet in pallets)
             {
-                storage = new(boxFileName);
-                storage.WriteValues(boxes.Values.ToList());
+                PalletDto palletDto = DtoConverter.FromPallet(pallet);
+                values.Add(palletDto);
+
+                foreach (var box in pallet.Boxes)
+                {
+                    BoxDto boxDto = DtoConverter.FromBox(box);
+                    palletDto.Boxes.Add(boxDto);
+                }
             }
 
-            var palletsOnly = pallets.Values.ToList();
-            if (!string.IsNullOrEmpty(boxFileName) && palletsOnly.Count > 0)
-            {
-                storage = new(palletFileName);
-                storage.WriteValues(palletsOnly);
-            }
-
-            if (!string.IsNullOrEmpty(containerFileName) && palletsOnly.Count > 0)
-            {
-                List<PalletBoxContainer> containers = Containers(palletsOnly);
-
-                storage = new(containerFileName);
-                storage.WriteValues(containers);
-            }
+            storage.StoreValues(values);
         }
 
-        public List<PalletBoxContainer> Containers(List<Pallet> palletsOnly)
+        public void ReadFromFile()
         {
-            return palletsOnly
-                    .Select(pallet => (pallet.Id, pallet.Boxes))
-                    .Select(pair => pair.Boxes.Select(box => new PalletBoxContainer(pair.Id, box.Id)))
-                    .SelectMany(list => list)
-                    .ToList();
-        }
+            FileStorage storage = new(dataFileName);
+            List<PalletDto> values = storage.ReadValues<PalletDto>();
 
-        public void ReadFromFiles()
-        {
-            JsonFileStorage storage;
-            if (!string.IsNullOrEmpty(boxFileName) && File.Exists(boxFileName))
-            {
-                storage = new(boxFileName);
-                var values = storage.ReadValues<Box>();
-                values.ForEach(box => boxes.Add(box.Id, box));
-            }
+            pallets.Clear();
 
-            if (!string.IsNullOrEmpty(palletFileName) && File.Exists(palletFileName))
+            foreach (var palletDto in values)
             {
-                storage = new(palletFileName);
-                var values = storage.ReadValues<Pallet>();
-                values.ForEach(pallet => pallets.Add(pallet.Id, pallet));
-            }
-            if (!string.IsNullOrEmpty(containerFileName) && File.Exists(containerFileName))
-            {
-                storage = new(containerFileName);
-                var values = storage.ReadValues<PalletBoxContainer>();
-                values.ForEach(container => pallets[container.PalletId].AddBox(boxes[container.BoxId]));
+                Pallet pallet = DtoConverter.FromPalletDto(palletDto);
+                pallets.Add(pallet);
+
+                foreach (var boxDto in palletDto.Boxes)
+                {
+                    Box box = DtoConverter.FromBoxDto(boxDto);
+                    pallet.AddBox(box);
+                }
             }
         }
 
-        public Box AddBox(Box box)
-        {
-            if (!boxes.ContainsKey(box.Id))
-            {
-                boxes.Add(box.Id, box);
-            }
-            return box;
-        }
         public Pallet AddPallet(Pallet pallet)
         {
-            if (!pallets.ContainsKey(pallet.Id))
+            if (!pallets.Contains(pallet))
             {
-                pallets.Add(pallet.Id, pallet);
+                pallets.Add(pallet);
             }
             return pallet;
         }
         public Box AddBoxToPallet(Pallet pallet, Box box)
         {
-            if (!pallets.ContainsKey(pallet.Id))
+            if (!pallets.Contains(pallet))
             {
-                pallets.Add(pallet.Id, pallet);
+                pallets.Add(pallet);
             }
             if (!pallet.Boxes.Contains(box))
             {
                 pallet.AddBox(box);
-            }
-            if (!boxes.ContainsKey(box.Id))
-            {
-                boxes.Add(box.Id, box);
             }
             return box;
         }

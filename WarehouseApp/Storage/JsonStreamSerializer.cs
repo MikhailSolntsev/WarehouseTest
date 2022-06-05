@@ -17,7 +17,7 @@ public class JsonStreamSerializer : IStreamSerializer
         if (stream != null)
         {
             JsonSerializerOptions options = SerializerOptions();
-            result = System.Text.Json.JsonSerializer.Deserialize<List<T>>(stream, options);
+            result = JsonSerializer.Deserialize<List<T>>(stream, options);
         }
         
         return result ?? new List<T>();
@@ -26,7 +26,7 @@ public class JsonStreamSerializer : IStreamSerializer
     public void Serialize<T>(Stream stream, List<T> value)
     {
         JsonSerializerOptions options = SerializerOptions();
-        System.Text.Json.JsonSerializer.Serialize(stream, value, options);
+        JsonSerializer.Serialize(stream, value, options);
     }
 
     private JsonSerializerOptions SerializerOptions()

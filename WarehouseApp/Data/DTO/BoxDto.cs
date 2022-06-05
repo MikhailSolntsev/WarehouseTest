@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace WarehouseApp.Data.DTO
 {
-    public class BoxDto
+    public class BoxDto : ScalableDto
     {
-        public uint Id { get; set; }
-        public uint Length { get; set; }
-        public uint Width { get; set; }
-        public uint Height { get; set; }
-        public uint Volume { get; set; }
         public DateTime ExpirationDate { get; set; }
         public BoxDto()
         {

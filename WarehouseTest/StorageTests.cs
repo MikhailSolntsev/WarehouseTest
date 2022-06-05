@@ -65,10 +65,11 @@ namespace WarehouseTest
             try
             {
                 fileStorage.StoreValues(written);
+                Assert.True(false, "Wrong filename does not throw any exception");
             }
-            finally
+            catch
             {
-                FileHelper.DeleteFileIfExists(fileName);
+                
             }
         }
 
@@ -82,12 +83,11 @@ namespace WarehouseTest
             try
             {
                 List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
-
-                Assert.True(false, "Чтение из некорректного файла должно выдавать ошибку");
+                Assert.True(false, "Wrong filename does not throw any exception");
             }
-            finally
+            catch
             {
-                FileHelper.DeleteFileIfExists(fileName);
+                
             }
         }
 

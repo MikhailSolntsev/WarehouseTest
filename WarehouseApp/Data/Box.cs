@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
-using WarehouseApp.Converters;
 
 namespace WarehouseApp.Data
 {
-    [JsonConverter(typeof(BoxJsonConverter))]
     public class Box : Scalable
     {
         private const int period = 100;

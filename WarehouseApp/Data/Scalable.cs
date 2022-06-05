@@ -56,6 +56,6 @@ namespace WarehouseApp.Data
             Console.ForegroundColor = consoleColor;
             Console.WriteLine();
         }
-
+        
     }
 }
