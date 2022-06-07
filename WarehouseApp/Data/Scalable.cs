@@ -24,38 +24,8 @@ namespace WarehouseApp.Data
             Length  = length;
             Weight  = weight;
         }
-        public void WriteElement(string label = "")
-        {
-            ConsoleColor consoleColor = Console.ForegroundColor;
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"{label} l:");
-            Console.ForegroundColor = consoleColor;
-            Console.Write(Length);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" w:");
-            Console.ForegroundColor = consoleColor;
-            Console.Write(Width);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" h:");
-            Console.ForegroundColor = consoleColor;
-            Console.Write(Height);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" weight:");
-            Console.ForegroundColor = consoleColor;
-            Console.Write(Weight);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" exp.date:");
-            Console.ForegroundColor = consoleColor;
-            Console.Write($"{ExpirationDate:dd.MM.yyyy}");
-
-            Console.ForegroundColor = consoleColor;
-            Console.WriteLine();
-        }
-        
+        public override int GetHashCode() => Id;
+        public override bool Equals(object? obj) => obj is Scalable &&  ((Scalable)obj).Id == Id;
     }
 }

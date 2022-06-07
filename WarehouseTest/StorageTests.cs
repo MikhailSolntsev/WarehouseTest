@@ -2,10 +2,10 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Linq;
 using WarehouseApp.Data;
 using WarehouseApp.Storage;
+using FluentAssertions;
 
 namespace WarehouseTest
 {
@@ -53,7 +53,7 @@ namespace WarehouseTest
             }
         }
 
-        [Fact(DisplayName = "Сохранение в некорректный файл бросает исключение")]
+        [Fact(DisplayName = "Writing in file with incorrect name should throw exception")]
         public void WritingWithWrongFileCauseException()
         {
             string fileName = "abirbalg*";
@@ -62,15 +62,10 @@ namespace WarehouseTest
 
             var written = SimpleData.SampleList();
 
-            try
-            {
-                fileStorage.StoreValues(written);
-                Assert.True(false, "Wrong filename does not throw any exception");
-            }
-            catch
-            {
-                
-            }
+            Action action = () => fileStorage.StoreValues(written);
+
+            action.Should().Throw<Exception>("Wrong filename does not throw any exception");
+            
         }
 
         [Fact(DisplayName = "Чтение из некорректного файла бросает исключение")]

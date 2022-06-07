@@ -6,14 +6,16 @@ using System.Linq;
 using WarehouseApp;
 using WarehouseApp.Data;
 using WarehouseApp.Storage;
+using FluentAssertions;
 
 namespace WarehouseTest
 {
     public class WarehouseTests
     {
-        [Fact(DisplayName = "Хранилище сохраняет и читает из файла корректно")]
+        [Fact(DisplayName = "Storage write and read the same file correctly")]
         public void WarehouseCanSaveInFiles()
         {
+            // Arrange
             string fileName = FileHelper.RandomFileName();
 
             Warehouse toFile = new Warehouse(fileName);
@@ -26,6 +28,7 @@ namespace WarehouseTest
 
             Warehouse fromFile = new Warehouse(fileName);
 
+            // Act
             try
             {
                 toFile.SaveToFile();
@@ -36,10 +39,25 @@ namespace WarehouseTest
                 FileHelper.DeleteFileIfExists(fileName);
             }
 
+            // Assert
             Assert.Single(fromFile.Pallets);
-
             Assert.Single(fromFile.Pallets.First(p => true).Boxes);
             
+        }
+        [Fact(DisplayName ="Warehouse do not add second same pallet")]
+        public void WarehouseDontAddSecondPallet()
+        {
+            // Arrange
+            Warehouse warehouse = new(FileHelper.RandomFileName());
+            Pallet pallet1 = new(13, 17, 19, 153);
+            Pallet pallet2 = new(13, 17, 19, 153);
+
+            // Act
+            warehouse.AddPallet(pallet1);
+            warehouse.AddPallet(pallet2);
+
+            // Assert
+            warehouse.Pallets.Should().HaveCount(1, "Warehouse should not contains two identical pallets");
         }
     }
 }

@@ -29,7 +29,7 @@ void GroupByDateSortByDateByWeight(Warehouse warehouse)
         Console.WriteLine($"Group expiration date: {group.Date}");
         foreach (var pallet in group.Pallets)
         {
-            pallet.WriteElement("   Pallet");
+            pallet.WriteToConsole("\tPallet");
         }
     }
 
@@ -113,11 +113,11 @@ static void WriteList(IEnumerable<Pallet> pallets)
 
     foreach (Pallet pallet in pallets)
     {
-        pallet.WriteElement("Pallet");
+        pallet.WriteToConsole("Pallet");
 
         foreach (Box box in pallet.Boxes)
         {
-            box.WriteElement("   Box");
+            box.WriteToConsole("\tBox");
         }
     }
 }
