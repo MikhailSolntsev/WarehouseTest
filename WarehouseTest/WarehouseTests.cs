@@ -17,7 +17,6 @@ namespace WarehouseTest
         {
             // Arrange
             string fileName = FileHelper.RandomFileName();
-
             Warehouse toFile = new Warehouse(fileName);
 
             Pallet pallet = new(13, 17, 19);

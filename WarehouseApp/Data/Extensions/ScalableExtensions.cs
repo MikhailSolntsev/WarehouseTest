@@ -5,22 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using WarehouseApp.Data;
 
-namespace WarehouseApp.Data.Extensions
-{
-    internal class ScalableExtensions
-    {
-    }
-}
-
+namespace WarehouseApp.Data.Extensions;
 
 public static class ScalableExtensions
 {
     /// <summary>
-    /// Adds NorthwindContext to the specified IServiceCollection. Uses the Sqlite database provider.
+    /// Extension to write Scalable classes to System.Console.
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="relativePath">Set to override the default of ".."</param>
-    /// <returns>An IServiceCollection that can be used to add more services.</returns>
+    /// <param name="scalable">Object inherited from Scalable</param>
+    /// <param name="label">String that writing before scalable: \t. class name etc.</param>
+    /// <returns>void</returns>
     public static void WriteToConsole(this Scalable scalable, string label = "")
     {
         var consoleColor = Console.ForegroundColor;

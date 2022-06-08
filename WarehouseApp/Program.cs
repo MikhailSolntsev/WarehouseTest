@@ -1,5 +1,6 @@
 ﻿using WarehouseApp;
 using WarehouseApp.Data;
+using WarehouseApp.Data.Extensions;
 using static System.Console;
 
 Warehouse warehouse = PrepareCollection();

@@ -2,26 +2,16 @@
 {
     public static class PalletExtensions
     {
-        public static PalletDto ToPalletDto(this Pallet pallet)
-        {
-            PalletDto palletDto = new();
-            palletDto.Id = pallet.Id;
-            palletDto.Length = pallet.Length;
-            palletDto.Height = pallet.Height;
-            palletDto.Width = pallet.Width;
+        public static PalletDto ToPalletDto(this Pallet pallet) => new() {
+            Id = pallet.Id,
+            Length = pallet.Length,
+            Height = pallet.Height,
+            Width = pallet.Width};
 
-            return palletDto;
-        }
-
-        public static Pallet ToPallet(this PalletDto palletDto)
-        {
-            Pallet pallet = new(
-                palletDto.Height,
-                palletDto.Width,
-                palletDto.Length,
-                palletDto.Id);
-
-            return pallet;
-        }
+        public static Pallet ToPallet(this PalletDto palletDto) => new(
+            palletDto.Height,
+            palletDto.Width,
+            palletDto.Length,
+            palletDto.Id);
     }
 }

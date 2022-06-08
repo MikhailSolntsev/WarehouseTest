@@ -15,7 +15,7 @@ namespace WarehouseApp.Data
         public int Width { get; }
         public int Length { get; }
         public virtual int Weight { get; }
-        public virtual int Volume { get { return Height * Width * Length; } }
+        public virtual int Volume { get => Height * Width * Length; }
         public virtual DateTime ExpirationDate { get; protected set; }
         public Scalable(int height, int width, int length, int weight)
         {
