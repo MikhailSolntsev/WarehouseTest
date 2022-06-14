@@ -11,14 +11,14 @@ namespace WarehouseApp.Data
 {
     public class Pallet : Scalable
     {
-        public const int OwnWeight = 30;
+        private const int OwnWeight = 30;
         private static int nextId = 0;
-        public override int Weight { get { return OwnWeight + boxes.Sum(box => box.Weight); } }
-        public override int Volume { get { return base.Volume + boxes.Sum(box => box.Volume); } }
+        public override int Weight { get => OwnWeight + boxes.Sum(box => box.Weight); }
+        public override int Volume { get => base.Volume + boxes.Sum(box => box.Volume);  }
         public override DateTime ExpirationDate { get => boxes.Count switch { 0 => DateTime.MinValue, _ => boxes.Min(box => box.ExpirationDate) }; }
 
         private List<Box> boxes = new();
-        public ImmutableList<Box> Boxes { get => ImmutableList.Create(boxes.ToArray()); }
+        public IReadOnlyList<Box> Boxes { get => boxes; }
 
         public Pallet(int height, int width, int length) : base(height, width, length, 0)
         {
@@ -48,5 +48,6 @@ namespace WarehouseApp.Data
             }
             boxes.Add(box);
         }
+
     }
 }

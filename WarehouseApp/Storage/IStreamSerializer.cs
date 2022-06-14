@@ -10,6 +10,6 @@ namespace WarehouseApp.Storage;
 
 public interface IStreamSerializer
 {
-    public void Serialize<T>(Stream stream, List<T> value);
-    public List<T> Deserialize<T>(Stream stream);
+    public void SerializeList<T>(Stream stream, List<T> value);
+    public List<T> DeserializeAsList<T>(Stream stream);
 }

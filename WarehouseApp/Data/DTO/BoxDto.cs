@@ -9,8 +9,6 @@ namespace WarehouseApp.Data.DTO
     public class BoxDto : ScalableDto
     {
         public DateTime ExpirationDate { get; set; }
-        public BoxDto()
-        {
-        }
+        public int Weight { get; set; }
     }
 }

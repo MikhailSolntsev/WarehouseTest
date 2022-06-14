@@ -9,8 +9,5 @@ namespace WarehouseApp.Data.DTO
     public class PalletDto : ScalableDto
     {
         public List<BoxDto> Boxes { get; set; } = new();
-        public PalletDto()
-        {
-        }
     }
 }

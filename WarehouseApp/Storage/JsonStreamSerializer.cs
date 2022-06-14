@@ -10,7 +10,7 @@ namespace WarehouseApp.Storage;
 
 public class JsonStreamSerializer : IStreamSerializer
 {
-    public List<T> Deserialize<T>(Stream stream)
+    public List<T> DeserializeAsList<T>(Stream stream)
     {
         List<T>? result = null;
 
@@ -23,7 +23,7 @@ public class JsonStreamSerializer : IStreamSerializer
         return result ?? new List<T>();
     }
 
-    public void Serialize<T>(Stream stream, List<T> value)
+    public void SerializeList<T>(Stream stream, List<T> value)
     {
         JsonSerializerOptions options = SerializerOptions();
         JsonSerializer.Serialize(stream, value, options);

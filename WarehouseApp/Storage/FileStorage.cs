@@ -27,6 +27,12 @@ namespace WarehouseApp.Storage
             List<T>? values = null;
 
             FileInfo fileInfo = new FileInfo(fileName);
+
+            if (fileInfo.Name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                throw new FileNotFoundException();
+            }
+
             if (!fileInfo.Exists)
             {
                 return new List<T>();
@@ -34,7 +40,7 @@ namespace WarehouseApp.Storage
 
             using (Stream fileStream = File.OpenRead(fileName))
             {
-                values = serializer.Deserialize<T>(fileStream);
+                values = serializer.DeserializeAsList<T>(fileStream);
             }
 
             return values ?? new List<T>();
@@ -44,7 +50,7 @@ namespace WarehouseApp.Storage
         {
             using (Stream fileStream = File.OpenWrite(fileName))
             {
-                serializer.Serialize(fileStream, values);
+                serializer.SerializeList(fileStream, values);
             }
         }
     }

@@ -4,10 +4,8 @@ namespace WarehouseTest
 {
     public static class FileHelper
     {
-        public static string RandomFileName()
-        {
-            return Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        }
+        public static string RandomFileName() =>
+            Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
         public static void DeleteFileIfExists(string fileName)
         {

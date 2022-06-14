@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WarehouseApp.Data;
-using WarehouseApp.Data.Converters;
+﻿using WarehouseApp.Data;
 using WarehouseApp.Data.DTO;
 using WarehouseApp.Storage;
 
@@ -15,9 +9,9 @@ namespace WarehouseApp
         private readonly string dataFileName;
 
         private readonly HashSet<Pallet> pallets = new();
-        
-        public IReadOnlySet<Pallet> Pallets{ get => pallets; }
-        
+
+        public IReadOnlySet<Pallet> Pallets { get => pallets; }
+
         public Warehouse()
         {
             dataFileName = Path.Combine(Environment.CurrentDirectory, "warehouse.json");
@@ -36,13 +30,13 @@ namespace WarehouseApp
 
             foreach (var pallet in pallets)
             {
-                PalletDto palletDto = DtoConverter.FromPallet(pallet);
+                PalletDto palletDto = pallet.ToPalletDto();
                 values.Add(palletDto);
 
                 foreach (var box in pallet.Boxes)
                 {
-                    BoxDto boxDto = DtoConverter.FromBox(box);
-                    palletDto.Boxes.Add(boxDto);
+
+                    palletDto.Boxes.Add(box.ToBoxDto());
                 }
             }
 
@@ -58,13 +52,12 @@ namespace WarehouseApp
 
             foreach (var palletDto in values)
             {
-                Pallet pallet = DtoConverter.FromPalletDto(palletDto);
+                Pallet pallet = palletDto.ToPallet();
                 pallets.Add(pallet);
 
                 foreach (var boxDto in palletDto.Boxes)
                 {
-                    Box box = DtoConverter.FromBoxDto(boxDto);
-                    pallet.AddBox(box);
+                    pallet.AddBox(boxDto.ToBox());
                 }
             }
         }

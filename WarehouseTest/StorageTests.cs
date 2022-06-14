@@ -2,49 +2,48 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Linq;
 using WarehouseApp.Data;
 using WarehouseApp.Storage;
+using FluentAssertions;
 
 namespace WarehouseTest
 {
     public class StorageTests
     {
-        [Fact(DisplayName = "Cериализация и десериализация произвольных объектов List<T>")]
+        [Fact(DisplayName = "Serialization and deserialization of List<Any>")]
         public void CanWriteAndReadObjectWithJsonStream()
         {
+            // Assign
             var written = SimpleData.SampleList();
-
             JsonStreamSerializer storage = new();
 
             using (MemoryStream stream = new())
             {
-                storage.Serialize(stream, written);
-
+                // Act
+                storage.SerializeList(stream, written);
                 stream.Seek(0, SeekOrigin.Begin);
+                List<SimpleData> readed = storage.DeserializeAsList<SimpleData>(stream);
 
-                List<SimpleData> readed = storage.Deserialize<SimpleData>(stream);
-
-                Assert.True(readed.SequenceEqual(written), "Written an readed arrays are different");
+                // Assert
+                Assert.True(readed.SequenceEqual(written), "Written an readed collections are different");
             }
         }
 
-        [Fact(DisplayName = "Сохранение и чтение произвольных объектов в файл")]
+        [Fact(DisplayName = "Reading and writing List<Any> in/from file")]
         public void CanWriteAndReadObjectWithFile()
         {
+            // Assign
             string fileName = FileHelper.RandomFileName();
-
             FileStorage fileStorage = new FileStorage(fileName);
-
             var written = SimpleData.SampleList();
-
             try
             {
+                // Act
                 fileStorage.StoreValues(written);
-
                 List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
 
+                // Assert
                 Assert.True(readed.SequenceEqual(written), "Written an readed arrays are different");
             }
             finally
@@ -53,52 +52,64 @@ namespace WarehouseTest
             }
         }
 
-        [Fact(DisplayName = "Сохранение в некорректный файл бросает исключение")]
+        [Fact(DisplayName = "Writing in file with incorrect name should throw exception")]
         public void WritingWithWrongFileCauseException()
         {
+            // Assign
             string fileName = "abirbalg*";
-
             FileStorage fileStorage = new FileStorage(fileName);
-
             var written = SimpleData.SampleList();
 
-            try
-            {
-                fileStorage.StoreValues(written);
-                Assert.True(false, "Wrong filename does not throw any exception");
-            }
-            catch
-            {
-                
-            }
+            // Act
+            Action action = () => fileStorage.StoreValues(written);
+
+            // Assert
+            action.Should().Throw<Exception>("Wrong filename does not throw any exception");
         }
 
-        [Fact(DisplayName = "Чтение из некорректного файла бросает исключение")]
+        [Fact(DisplayName = "Reading from file with incorrect name should throw exception")]
         public void ReadingWithWrongFileCauseException()
         {
+            // Assign
             string fileName = "abirbalg*";
-
             FileStorage fileStorage = new FileStorage(fileName);
 
-            try
-            {
-                List<SimpleData> readed = fileStorage.ReadValues<SimpleData>();
-                Assert.True(false, "Wrong filename does not throw any exception");
-            }
-            catch
-            {
-                
-            }
+            // Act
+            Action action = () => fileStorage.ReadValues<SimpleData>();
+
+            // Assert
+            action.Should().Throw<Exception>("Wrong filename should throw exception");
         }
 
-        [Fact(DisplayName = "Чтение из пустого файлы не вызывает исключения, возвращает пустой список")]
-        public void CorrectReadintFromNonexistingFile()
+        [Fact(DisplayName = "Reading from unexisted file should not throw any exception")]
+        public void ReadingFromUnexistedFileShoulNotCauseExceptions()
         {
+            // Assign
             string fileName = FileHelper.RandomFileName();
-
             FileStorage fileStorage = new FileStorage(fileName);
 
+            // Act
+            Func<List<Pallet>> action = () => fileStorage.ReadValues<Pallet>();
+
+            // Assert
+            action.Should().NotThrow<Exception>("Reading from empty file should not throw any exceptions");
+        }
+
+        [Fact(DisplayName = "Reading from unexisted file should return empty list")]
+        public void ReadingFromUnexistedFileShoulReturnEmptyList()
+        {
+            // Assign
+            string fileName = FileHelper.RandomFileName();
+            FileStorage fileStorage = new FileStorage(fileName);
+
+            // Act
             var values = fileStorage.ReadValues<Pallet>();
+
+            // Assert
+            values.Should()
+                .BeOfType<List<Pallet>>("Reading from unexisted file should return list")
+                .And
+                .BeEmpty("Reading from unexisted file should return EMPTY list");
         }
     }
 
@@ -125,7 +136,6 @@ namespace WarehouseTest
             }
             return Name.Equals(second?.Name) && Value == second.Value;
         }
-
         public override int GetHashCode()
         {
             throw new NotImplementedException();
