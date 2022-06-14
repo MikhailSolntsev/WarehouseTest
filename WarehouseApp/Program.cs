@@ -80,8 +80,8 @@ static Warehouse PrepareCollection()
 
 static void CreateCollection(Warehouse warehouse)
 {
-    const int maxPallets = 6;
-    const int maxDates = 20;
+    int maxPallets = 6;
+    int maxDates = 20;
 
     List<DateTime> dates = Enumerable
         .Range(1, maxDates)
