@@ -26,12 +26,13 @@ namespace WarehouseApp.Storage
         {
             List<T>? values = null;
 
-            if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            FileInfo fileInfo = new FileInfo(fileName);
+
+            if (fileInfo.Name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             {
                 throw new FileNotFoundException();
             }
 
-            FileInfo fileInfo = new FileInfo(fileName);
             if (!fileInfo.Exists)
             {
                 return new List<T>();

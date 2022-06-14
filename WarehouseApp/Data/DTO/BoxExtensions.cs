@@ -1,22 +1,20 @@
-﻿namespace WarehouseApp.Data.DTO;
+﻿using AutoMapper;
+
+namespace WarehouseApp.Data.DTO;
 
 public static class BoxExtensions
 {
-    public static BoxDto ToBoxDto(this Box box) => new()
+    public static BoxDto ToBoxDto(this Box box)
     {
-        Id = box.Id,
-        Length = box.Length,
-        Height = box.Height,
-        Width = box.Width,
-        Weight = box.Weight,
-        ExpirationDate = box.ExpirationDate
-    };
+        var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Box, BoxDto>());
+        var mapper = configuration.CreateMapper();
+        return mapper.Map<BoxDto>(box);
+    }
 
-    public static Box ToBox(this BoxDto boxDto) => new(
-        boxDto.Height,
-        boxDto.Width,
-        boxDto.Length,
-        boxDto.Weight,
-        boxDto.ExpirationDate,
-        boxDto.Id);
+    public static Box ToBox(this BoxDto boxDto)
+    {
+        var configuration = new MapperConfiguration(cfg => cfg.CreateMap<BoxDto, Box>());
+        var mapper = configuration.CreateMapper();
+        return mapper.Map<Box>(boxDto);
+    }
 }

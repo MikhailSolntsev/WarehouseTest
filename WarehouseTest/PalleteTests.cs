@@ -1,6 +1,7 @@
 ﻿using Xunit;
 using System;
 using WarehouseApp.Data;
+using WarehouseApp.Data.DTO;
 using FluentAssertions;
 
 namespace WarehouseTest
@@ -70,7 +71,7 @@ namespace WarehouseTest
             // Assert
             Assert.Equal(day4, pallet.ExpirationDate);
         }
-        [Fact(DisplayName = "Adding box with large height throws exception")]
+        [Fact(DisplayName = "Adding pallet with large height throws exception")]
         public void PalleteAddBoxLagreHeight()
         {
             // Assign
@@ -81,9 +82,9 @@ namespace WarehouseTest
             Action action = () => pallet.AddBox(box);
 
             // Assert
-            action.Should().Throw<ArgumentOutOfRangeException>("Does not allow to add too large box");
+            action.Should().Throw<ArgumentOutOfRangeException>("Does not allow to add too large pallet");
         }
-        [Fact(DisplayName = "Adding box with large width throws exception")]
+        [Fact(DisplayName = "Adding pallet with large width throws exception")]
         public void PalleteAddBoxLagreWidth()
         {
             // Assign
@@ -94,9 +95,9 @@ namespace WarehouseTest
             Action action = () => pallet.AddBox(box);
 
             // Assert
-            action.Should().Throw<ArgumentOutOfRangeException>("Does not allow to add too large box");
+            action.Should().Throw<ArgumentOutOfRangeException>("Does not allow to add too large pallet");
         }
-        [Fact(DisplayName = "Adding box with large length throws exception")]
+        [Fact(DisplayName = "Adding pallet with large length throws exception")]
         public void PalleteAddBoxLagreLength()
         {
             // Assign
@@ -107,7 +108,50 @@ namespace WarehouseTest
             Action action = () => pallet.AddBox(box);
 
             // Assert
-            action.Should().Throw<ArgumentOutOfRangeException>("Does not allow to add too large box");
+            action.Should().Throw<ArgumentOutOfRangeException>("Does not allow to add too large pallet");
+        }
+        [Fact(DisplayName = "Can convert Pallet to PalletDTO")]
+        public void PalletCanConvertToPalletDto()
+        {
+            Pallet pallet = new(3, 5, 7);
+
+            Box box = new(3, 5, 7, 11, DateTime.Today);
+            pallet.AddBox(box);
+
+            PalletDto palletDto = pallet.ToPalletDto();
+
+            pallet.Length.Should().Be(palletDto.Length);
+            pallet.Height.Should().Be(palletDto.Height);
+            pallet.Width.Should().Be(palletDto.Width);
+            palletDto.Boxes.Count.Should().Be(0);
+        }
+        [Fact(DisplayName = "Can convert palletDto to Pallet")]
+        public void PalletDtoCanConvertToPallet()
+        {
+            PalletDto palletDto = new()
+            {
+                Length = 3,
+                Height = 5,
+                Width = 7
+            };
+
+            BoxDto boxDto = new()
+            {
+                Length = 3,
+                Height = 5,
+                Width = 7,
+                Weight = 9,
+                ExpirationDate = DateTime.Today
+            };
+
+            palletDto.Boxes.Add(boxDto);
+
+            Pallet pallet = palletDto.ToPallet();
+
+            pallet.Length.Should().Be(palletDto.Length);
+            pallet.Height.Should().Be(palletDto.Height);
+            pallet.Width.Should().Be(palletDto.Width);
+            pallet.Boxes.Count.Should().Be(0);
         }
     }
 }

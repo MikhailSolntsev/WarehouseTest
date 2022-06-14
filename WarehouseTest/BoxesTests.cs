@@ -1,6 +1,7 @@
 using Xunit;
 using System;
 using WarehouseApp.Data;
+using WarehouseApp.Data.DTO;
 using FluentAssertions;
 
 namespace WarehouseTest
@@ -45,6 +46,39 @@ namespace WarehouseTest
             Action action = () => new Box(3, 5, 7, 11);
 
             action.Should().Throw<ArgumentNullException>("Creating box without dates should throw exception");
+        }
+        [Fact(DisplayName = "Can convert Box to BoxDTO")]
+        public void BoxCanConvertToBoxDto()
+        {
+            Box box = new(3, 5, 7, 11, DateTime.Today);
+
+            BoxDto boxDto = box.ToBoxDto();
+
+            box.Length.Should().Be(boxDto.Length);
+            box.Height.Should().Be(boxDto.Height);
+            box.Width.Should().Be(boxDto.Width);
+            box.Weight.Should().Be(boxDto.Weight);
+            box.ExpirationDate.Should().Be(boxDto.ExpirationDate);
+        }
+        [Fact(DisplayName = "Can convert BoxDto to Box")]
+        public void BoxDtoCanConvertToBox()
+        {
+            BoxDto boxDto = new()
+            {
+                Length = 3,
+                Height = 5,
+                Width = 7,
+                Weight = 11,
+                ExpirationDate = DateTime.Today
+            };
+
+            Box box = boxDto.ToBox();
+
+            box.Length.Should().Be(boxDto.Length);
+            box.Height.Should().Be(boxDto.Height);
+            box.Width.Should().Be(boxDto.Width);
+            box.Weight.Should().Be(boxDto.Weight);
+            box.ExpirationDate.Should().Be(boxDto.ExpirationDate);
         }
     }
 }

@@ -1,17 +1,29 @@
-﻿namespace WarehouseApp.Data.DTO
+﻿using AutoMapper;
+
+namespace WarehouseApp.Data.DTO
 {
     public static class PalletExtensions
     {
-        public static PalletDto ToPalletDto(this Pallet pallet) => new() {
-            Id = pallet.Id,
-            Length = pallet.Length,
-            Height = pallet.Height,
-            Width = pallet.Width};
-
-        public static Pallet ToPallet(this PalletDto palletDto) => new(
-            palletDto.Height,
-            palletDto.Width,
-            palletDto.Length,
-            palletDto.Id);
+        public static PalletDto ToPalletDto(this Pallet pallet)
+        {
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Pallet, PalletDto>()
+                    .ForMember(pallet => pallet.Boxes, opt => opt.Ignore());
+            });
+            var mapper = configuration.CreateMapper();
+            return mapper.Map<PalletDto>(pallet);
+        }
+        
+        public static Pallet ToPallet(this PalletDto palletDto)
+        {
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<PalletDto, Pallet>()
+                    .ForMember(pallet => pallet.Boxes, opt => opt.Ignore());
+            });
+            var mapper = configuration.CreateMapper();
+            return mapper.Map<Pallet>(palletDto);
+        }
     }
 }
